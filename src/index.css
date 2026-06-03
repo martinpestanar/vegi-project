@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+/* ====================================================
+   VEGI — SISTEMA DE DISEÑO "SPIRITUAL SATTVA & PRANA"
+   Diseño Light (por defecto) y Dark (opcional).
+   ==================================================== */
+
+:root {
+  /* LIGHT THEME (Default) */
+  --bg-primary: #F4F7F5;          /* Fondo base claro, fresco y natural */
+  --bg-card: #FFFFFF;             /* Tarjetas blancas puras */
+  --bg-elevated: #E8EFEA;         /* Verde loto muy suave */
+  --accent-mint: #10B981;         /* Verde esmeralda/menta para luz de vida */
+  --accent-teal: #0284C7;         /* Azul espiritual Isha */
+  --accent-gold: #D97706;         /* Oro místico en modo claro */
+  --border-moss: #E1E8E4;         /* Bordes de hojas suaves */
+  --text-primary: #0F172A;        /* Slate oscuro para excelente lectura */
+  --text-secondary: #475569;      /* Slate medio */
+  --text-muted: #94A3B8;
+  --bg-radial: radial-gradient(ellipse at top, #E8F5E9 0%, #E0F2FE 45%, #F4F7F5 90%);
+}
+
+.dark-theme {
+  /* DARK THEME */
+  --bg-primary: #070B09;         /* Charcoal boscoso profundo */
+  --bg-card: #0E1612;            /* Verde bosque ultra oscuro */
+  --bg-elevated: #15221B;        /* Verde musgo */
+  --accent-mint: #2EE59D;        /* Menta brillante */
+  --accent-teal: #0EA5E9;        /* Azul espiritual neón */
+  --accent-gold: #F59E0B;        /* Oro brillante */
+  --border-moss: #172B20;        /* Verde musgo oscuro */
+  --text-primary: #F0FDF4;       /* Blanco loto */
+  --text-secondary: #9CA3AF;     /* Gris bruma */
+  --text-muted: #4B5563;
+  --bg-radial: radial-gradient(ellipse at top, #0f2218 0%, #081d29 45%, #040706 90%);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+html, body {
+  background: var(--bg-primary);
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  color: var(--text-primary);
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  min-height: 100dvh;
+  background: var(--bg-radial);
+}
+
+/* ====================================================
+   ANIMACIONES PERSONALIZADAS
+   ==================================================== */
+
+@keyframes pulse-teal {
+  0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(14, 165, 233, 0.3); }
+  50% { opacity: 0.7; box-shadow: 0 0 20px rgba(14, 165, 233, 0.6); }
+}
+
+@keyframes wave-bar {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes float-in {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes confetti-pop {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(2) rotate(720deg); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--accent-mint)); }
+  50% { filter: drop-shadow(0 0 12px var(--accent-mint)) drop-shadow(0 0 24px var(--accent-teal)); }
+}
+
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+@keyframes slide-up-modal {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes star-burst {
+  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.animate-pulse-teal { animation: pulse-teal 2.5s ease-in-out infinite; }
+.animate-float-in { animation: float-in 0.4s ease-out forwards; }
+.animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+.animate-star-burst { animation: star-burst 0.5s ease-out forwards; }
+.animate-slide-up { animation: slide-up-modal 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.animate-spin-slow { animation: spin-slow 12s linear infinite; }
+
+/* Wave bars para audio */
+.wave-bar {
+  display: inline-block;
+  width: 3px;
+  background: var(--accent-teal);
+  border-radius: 2px;
+  animation: wave-bar 0.8s ease-in-out infinite;
+}
+.wave-bar:nth-child(2) { animation-delay: 0.1s; height: 20px; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; height: 28px; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; height: 16px; }
+.wave-bar:nth-child(5) { animation-delay: 0.15s; height: 24px; }
+.wave-bar:nth-child(6) { animation-delay: 0.25s; height: 12px; }
+.wave-bar:nth-child(7) { animation-delay: 0.05s; height: 20px; }
+
+/* Shimmer loading */
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-moss); border-radius: 10px; }
+
+/* Estados táctiles */
+.tap-active:active {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
+}
+
+/* Gradiente de texto */
+.text-gradient-spiritual {
+  background: linear-gradient(135deg, var(--accent-mint), var(--accent-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Borde con glow */
+.border-glow-spiritual {
+  border: 1px solid rgba(46, 229, 157, 0.25);
+  box-shadow: 0 0 15px rgba(46, 229, 157, 0.08), inset 0 0 15px rgba(14, 165, 233, 0.03);
+}
+
+/* Confetti particles */
+.confetti-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: confetti-pop 1s ease-out forwards;
+}
