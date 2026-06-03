@@ -1326,6 +1326,21 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed italic">
                     "{selectedIngredient.description}"
                   </p>
+                  
+                  {selectedIngredient.nutrients && (
+                    <div className="mt-1 bg-sky-950/20 border border-sky-900/30 p-2.5 rounded-xl text-[10px] text-sky-400">
+                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-sky-300 mb-0.5">🧬 Alquimia Nutricional</span>
+                      {selectedIngredient.nutrients}
+                    </div>
+                  )}
+
+                  {selectedIngredient.pairing && (
+                    <div className="mt-1 bg-amber-950/20 border border-amber-900/30 p-2.5 rounded-xl text-[10px] text-amber-400">
+                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-amber-300 mb-0.5">🔮 Sinergia Culinaria</span>
+                      {selectedIngredient.pairing}
+                    </div>
+                  )}
+
                   {selectedIngredient.tips && (
                     <div className="text-[10px] text-[var(--accent-mint)] leading-relaxed mt-1 font-semibold bg-[var(--accent-mint)]/10 border border-[var(--accent-mint)]/20 p-2.5 rounded-xl">
                       💡 Tip de Alquimia: {selectedIngredient.tips}
