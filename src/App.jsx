@@ -1328,15 +1328,15 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                   </p>
                   
                   {selectedIngredient.nutrients && (
-                    <div className="mt-1 bg-sky-950/20 border border-sky-900/30 p-2.5 rounded-xl text-[10px] text-sky-400">
-                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-sky-300 mb-0.5">🧬 Alquimia Nutricional</span>
+                    <div className="mt-1 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 p-2.5 rounded-xl text-[10px] text-emerald-800 dark:text-emerald-300">
+                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-emerald-600 dark:text-emerald-400 mb-0.5">🧬 Alquimia Nutricional</span>
                       {selectedIngredient.nutrients}
                     </div>
                   )}
 
                   {selectedIngredient.pairing && (
-                    <div className="mt-1 bg-amber-950/20 border border-amber-900/30 p-2.5 rounded-xl text-[10px] text-amber-400">
-                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-amber-300 mb-0.5">🔮 Sinergia Culinaria</span>
+                    <div className="mt-1 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/50 p-2.5 rounded-xl text-[10px] text-orange-900 dark:text-orange-200">
+                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-orange-600 dark:text-orange-400 mb-0.5">🔮 Sinergia Culinaria</span>
                       {selectedIngredient.pairing}
                     </div>
                   )}
