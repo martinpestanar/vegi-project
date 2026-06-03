@@ -4,6 +4,7 @@
 // ============================================================
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import ReactDOM from 'react-dom'
 import {
   Home, MessageCircle, Globe, ChefHat,
   Flame, Star, Zap, Lock, Unlock,
@@ -15,6 +16,7 @@ import {
 import { supabase } from './supabaseClient'
 import { useVegiSync } from './useVegiSync'
 import { useCountryMedia } from './useCountryMedia'
+import { ENCYCLOPEDIA_DATABASE } from './encyclopediaData'
 
 // ============================================================
 // DATOS DE SIMULACIÓN (FALLBACK Y RESPUESTAS DEL ORÁCULO)
@@ -847,6 +849,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
   const [encResults, setEncResults] = useState([])
   const [selectedIngredient, setSelectedIngredient] = useState(null)
   const [wikiIngInfo, setWikiIngInfo] = useState({ summary: '', loading: false })
+  const [selectedCategoryPill, setSelectedCategoryPill] = useState('Todos')
 
   const searchIngredientsInApis = async (query) => {
     if (!query.trim()) {
@@ -855,70 +858,13 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
     }
     setSearchingEnc(true)
     try {
-      // 1. Base local premium
-      const mockIngredients = [
-        { id: 11352, name: 'Papa Amarilla Nativa', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?q=80&w=350&auto=format&fit=crop', category: 'Tubérculos', origin: 'Andes', energy: 'Tamas / Sattva', level: 1, description: 'Tubérculo de enraizamiento profundo. Proporciona estabilidad y carbohidratos complejos.' },
-        { id: 9901, name: 'Activación de Granos', isTech: true, image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Universal', energy: 'Sattva Máximo', level: 1, description: 'Remojo en medio ácido para desactivar antinutrientes (ácido fítico) y liberar enzimas vitales.' },
-        { id: 12104, name: 'Coco Rallado Orgánico', image: 'https://images.unsplash.com/photo-1589820296156-2454bb8a6ad1?q=80&w=350&auto=format&fit=crop', category: 'Frutos Secos', origin: 'Tailandia', energy: 'Sattva', level: 2, description: 'Aporta grasas nobles que lubrican los tejidos y calman el exceso de fuego (Pitta).' },
-        { id: 11216, name: 'Jengibre Sagrado (Khing)', image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=350&auto=format&fit=crop', category: 'Especias', origin: 'Sudoeste de Asia', energy: 'Rajas / Sattva', level: 2, description: 'Raíz ígnea que enciende el Agni (fuego digestivo) y purifica las toxinas acumuladas.' },
-        { id: 20081, name: 'Harina de Quinua Real', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=350&auto=format&fit=crop', category: 'Granos Ancestrales', origin: 'Andes del Perú', energy: 'Sattva Máximo', level: 3, description: 'Grano sagrado rico en lisina y aminoácidos esenciales, secado al sol.' },
-        { id: 11962, name: 'Champiñón Shiitake Silvestre', image: 'https://images.unsplash.com/photo-1579619077671-5509746f332c?q=80&w=350&auto=format&fit=crop', category: 'Hongos', origin: 'Asia Oriental', energy: 'Sattva', level: 3, description: 'Hongo que conecta con la sabiduría de la tierra. Potente modulador inmunológico.' },
-        { id: 12555, name: 'Mijo Pelado Orgánico', image: 'https://images.unsplash.com/photo-1574316071802-0d684efa7bf5?q=80&w=350&auto=format&fit=crop', category: 'Granos Ancestrales', origin: 'América del Norte / Asia', energy: 'Sattva', level: 1, description: 'El mijo es un grano antiguo libre de gluten, sumamente alcalinizante y de muy fácil digestión.', tips: 'Lávalo bien antes de hervir. Queda delicioso como base cremosa en desayunos o sustituto de arroz.' },
-        { id: 9902, name: 'Fermentación Láctica', isTech: true, image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Europa / Asia', energy: 'Sattva Máximo', level: 3, description: 'Transmutación biológica mediante lactobacterias que sintetizan vitaminas y mejoran microbiota digestiva.' }
-      ]
-
-      // Filtrar resultados locales
-      const localFiltered = mockIngredients.filter(i => 
-        i.name.toLowerCase().includes(query.toLowerCase()) || 
-        i.category.toLowerCase().includes(query.toLowerCase())
+      const q = query.toLowerCase().trim()
+      const filtered = ENCYCLOPEDIA_DATABASE.filter(item => 
+        item.name.toLowerCase().includes(q) || 
+        item.category.toLowerCase().includes(q) ||
+        item.origin.toLowerCase().includes(q)
       )
-
-      // 2. Consulta dinámica a Open Food Facts API (Soporta millones de ingredientes y trae fotos reales)
-      let apiItems = []
-      try {
-        const response = await fetch(
-          `https://world.openfoodfacts.org/api/v2/search?categories_tags=plant-based-foods-and-beverages&generic_name_es=${encodeURIComponent(query)}&fields=code,product_name,image_url,categories,origins,countries,generic_name,brands&limit=6`
-        )
-        if (response.ok) {
-          const data = await response.json()
-          if (data.products && data.products.length > 0) {
-            apiItems = data.products
-              .filter(p => p.product_name && p.product_name.trim() !== '')
-              .map((p, idx) => {
-                const category = p.categories_tags?.[0]?.replace('en:', '')?.replace('-', ' ') || 'Alimento'
-                return {
-                  id: p.id || `off-${idx}-${Date.now()}`,
-                  name: p.product_name,
-                  image: p.image_url || 'https://images.unsplash.com/photo-1547514701-42782101795e?q=80&w=350', // fallback vegetal
-                  category: category.charAt(0).toUpperCase() + category.slice(1),
-                  origin: p.origins || p.countries || 'Global',
-                  energy: 'Sattva / Prana Neutro',
-                  level: 1,
-                  description: `Insumo vegetal consultado en la red global: ${p.generic_name || 'Ingrediente natural de alimentación conscientiente.'}`,
-                  tips: `Ideal para incorporar en recetas plant-based. Marca registrada: ${p.brands || 'Natural'}.`
-                }
-              })
-          }
-        }
-      } catch (err) {
-        console.warn("Open Food Facts API no disponible:", err)
-      }
-
-      // Mezclar resultados locales con los de la API externa
-      const mergedResults = [...localFiltered, ...apiItems]
-      
-      // Remover duplicados por nombre
-      const uniqueResults = []
-      const namesSeen = new Set()
-      for (const item of mergedResults) {
-        const nameKey = item.name.toLowerCase().trim()
-        if (!namesSeen.has(nameKey)) {
-          namesSeen.add(nameKey)
-          uniqueResults.push(item)
-        }
-      }
-
-      setEncResults(uniqueResults)
+      setEncResults(filtered)
     } catch (e) {
       console.error(e)
     } finally {
@@ -1150,72 +1096,135 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
 
           {/* Sub-selectores dentro de la Enciclopedia para dividir Insumos de Técnicas */}
           {(() => {
-            // Todos los ingredientes y técnicas unificados
-            const premiumItems = [
-              { id: 9003, name: 'Manzana Silvestre', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?q=80&w=350&auto=format&fit=crop', category: 'Frutas', origin: 'Región Templada', energy: 'Sattva', level: 1, description: 'Representa la vitalidad y el frescor pránico. Excelente regulador de digestión.' },
-              { id: 11352, name: 'Papa Amarilla Nativa', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?q=80&w=350&auto=format&fit=crop', category: 'Tubérculos', origin: 'Andes', energy: 'Tamas / Sattva', level: 1, description: 'Tubérculo de enraizamiento profundo. Proporciona estabilidad y carbohidratos complejos.' },
-              { id: 9901, name: 'Activación de Granos', isTech: true, image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Universal', energy: 'Sattva Máximo', level: 1, description: 'Remojo en medio ácido para desactivar antinutrientes (ácido fítico) y liberar enzimas vitales.' },
-              { id: 12104, name: 'Coco Rallado Orgánico', image: 'https://images.unsplash.com/photo-1589820296156-2454bb8a6ad1?q=80&w=350&auto=format&fit=crop', category: 'Frutos Secos', origin: 'Tailandia', energy: 'Sattva', level: 2, description: 'Aporta grasas nobles que lubrican los tejidos y calman el exceso de fuego (Pitta).' },
-              { id: 11216, name: 'Jengibre Sagrado (Khing)', image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=350&auto=format&fit=crop', category: 'Especias', origin: 'Sudoeste de Asia', energy: 'Rajas / Sattva', level: 2, description: 'Raíz ígnea que enciende el Agni (fuego digestivo) y purifica las toxinas acumuladas.' },
-              { id: 20081, name: 'Harina de Quinua Real', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=350&auto=format&fit=crop', category: 'Granos Ancestrales', origin: 'Andes del Perú', energy: 'Sattva Máximo', level: 3, description: 'Grano sagrado rico en lisina y aminoácidos esenciales, secado al sol.' },
-              { id: 11962, name: 'Champiñón Shiitake Silvestre', image: 'https://images.unsplash.com/photo-1579619077671-5509746f332c?q=80&w=350&auto=format&fit=crop', category: 'Hongos', origin: 'Asia Oriental', energy: 'Sattva', level: 3, description: 'Hongo que conecta con la sabiduría de la tierra. Potente modulador inmunológico.' },
-              { id: 9902, name: 'Fermentación Láctica', isTech: true, image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Europa / Asia', energy: 'Sattva Máximo', level: 3, description: 'Transmutación biológica mediante lactobacterias que sintetizan vitaminas y mejoran microbiota digestiva.' }
+            // Si hay búsqueda activa, usar encResults; de lo contrario, la base completa
+            const allDatabaseItems = encQuery.trim() !== '' ? encResults : ENCYCLOPEDIA_DATABASE
+
+            // Obtener todas las categorías únicas para el carrusel horizontal
+            const categories = [
+              'Todos',
+              'Granos Ancestrales',
+              'Semillas',
+              'Frutos Secos',
+              'Proteínas',
+              'Fermentos',
+              'Superalimentos',
+              'Especias',
+              'Hongos',
+              'Tubérculos',
+              'Hierbas y Aceites',
+              'Algas y Mar',
+              'Técnica Alquímica'
             ]
 
-            // Si hay búsqueda activa, agregar los ingredientes consultados por la API
-            const allDatabaseItems = encQuery.trim() !== '' ? encResults : premiumItems
-
-            // Filtrar según el input de búsqueda global y según la pestaña local seleccionada
+            // Filtrar según el input de búsqueda global, tipo (Insumos vs Técnicas) y la categoría activa en el Pill carrusel
             const filteredItems = allDatabaseItems.filter(item => {
+              // Filtro de Pestaña Principal (Insumos vs Técnicas)
               const matchesTab = localTab === 'all' || 
                 (localTab === 'ingredients' && !item.isTech) || 
                 (localTab === 'techniques' && item.isTech)
 
-              return matchesTab
+              // Filtro de Categoría Secundario (Pill horizontal)
+              const matchesPill = selectedCategoryPill === 'Todos' || item.category === selectedCategoryPill
+
+              return matchesTab && matchesPill
             })
+
+            // Calcular porcentaje de maestría culinaria para el anillo stats
+            const totalItemsCount = ENCYCLOPEDIA_DATABASE.length
+            const userProgressPercentage = Math.min(Math.round(((state.xp % 1000) / 1000) * 100), 100)
 
             return (
               <>
-                {/* Micro Tabs Internos */}
-                <div className="flex bg-[var(--bg-primary)] border border-[var(--border-moss)] p-0.5 rounded-lg text-[10px] font-bold">
+                {/* Stats de Maestría Culinaria (Estilo Duolingo/Headspace) */}
+                <div className="bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-elevated)] border border-[var(--border-moss)] rounded-2xl p-4 flex items-center justify-between shadow-sm relative overflow-hidden">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-[var(--accent-gold)] uppercase tracking-wider font-bold">Maestría Plant-Based</span>
+                    <h4 className="text-sm font-black text-[var(--text-primary)] mt-1 font-['Space_Grotesk']">
+                      Nivel {state.level} — Iniciado Sagrado
+                    </h4>
+                    <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">
+                      {state.xp} XP acumulados en tu sendero pránico.
+                    </p>
+                  </div>
+                  <div className="relative flex items-center justify-center w-12 h-12">
+                    <svg className="w-full h-full transform -rotate-90">
+                      <circle cx="24" cy="24" r="20" stroke="var(--border-moss)" strokeWidth="3" fill="transparent" />
+                      <circle cx="24" cy="24" r="20" stroke="var(--accent-mint)" strokeWidth="3" fill="transparent"
+                        strokeDasharray={2 * Math.PI * 20}
+                        strokeDashoffset={2 * Math.PI * 20 * (1 - userProgressPercentage / 100)}
+                        strokeLinecap="round"
+                        className="transition-all duration-500"
+                      />
+                    </svg>
+                    <span className="absolute text-[10px] font-black text-[var(--accent-mint)]">{userProgressPercentage}%</span>
+                  </div>
+                </div>
+
+                {/* Input de Búsqueda Rediseñado */}
+                <div className="relative">
+                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={encQuery}
+                    onChange={(e) => setEncQuery(e.target.value)}
+                    placeholder="Buscar quinua, jengibre, coco, fermentos..."
+                    className="w-full bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl pl-11 pr-4 py-3 text-xs text-[var(--text-primary)] placeholder-gray-500 outline-none focus:border-[var(--accent-mint)]/40 transition-colors shadow-inner"
+                  />
+                  {encQuery && (
+                    <button onClick={() => setEncQuery('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-white">
+                      <X size={12} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Micro Tabs Internos Culinarios */}
+                <div className="flex bg-[var(--bg-primary)] border border-[var(--border-moss)] p-0.5 rounded-xl text-[10px] font-bold">
                   <button
-                    onClick={() => setLocalTab('all')}
-                    className={`flex-1 py-1 rounded transition-all ${localTab === 'all' ? 'bg-[var(--accent-teal)]/20 text-[var(--accent-teal)]' : 'text-gray-400'}`}
+                    onClick={() => { setLocalTab('all'); setSelectedCategoryPill('Todos'); }}
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${localTab === 'all' ? 'bg-[var(--accent-teal)]/20 text-[var(--accent-teal)]' : 'text-gray-400'}`}
                   >
-                    Todos ({filteredItems.length})
+                    Todo ({allDatabaseItems.length})
                   </button>
                   <button
-                    onClick={() => setLocalTab('ingredients')}
-                    className={`flex-1 py-1 rounded transition-all ${localTab === 'ingredients' ? 'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]' : 'text-gray-400'}`}
+                    onClick={() => { setLocalTab('ingredients'); setSelectedCategoryPill('Todos'); }}
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${localTab === 'ingredients' ? 'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]' : 'text-gray-400'}`}
                   >
                     🌾 Insumos
                   </button>
                   <button
-                    onClick={() => setLocalTab('techniques')}
-                    className={`flex-1 py-1 rounded transition-all ${localTab === 'techniques' ? 'bg-[var(--accent-mint)]/20 text-[var(--accent-mint)]' : 'text-gray-400'}`}
+                    onClick={() => { setLocalTab('techniques'); setSelectedCategoryPill('Técnica Alquímica'); }}
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${localTab === 'techniques' ? 'bg-[var(--accent-mint)]/20 text-[var(--accent-mint)]' : 'text-gray-400'}`}
                   >
                     🧠 Técnicas
                   </button>
                 </div>
 
-                {/* Input de Búsqueda */}
-                <div className="relative">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={encQuery}
-                    onChange={(e) => setEncQuery(e.target.value)}
-                    placeholder="Buscar quinua, jengibre, coco, miso..."
-                    className="w-full bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl pl-10 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-gray-500 outline-none focus:border-[var(--accent-mint)]/40 transition-colors shadow-inner"
-                  />
-                </div>
+                {/* Carrusel Deslizable Horizontal de Categorías (Pills) */}
+                {localTab !== 'techniques' && (
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+                    {categories.filter(cat => cat !== 'Técnica Alquímica').map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategoryPill(cat)}
+                        className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all ${
+                          selectedCategoryPill === cat
+                            ? 'bg-[var(--accent-mint)] text-[var(--bg-primary)] border-[var(--accent-mint)] shadow-md scale-105'
+                            : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-moss)] hover:border-gray-500'
+                        }`}
+                      >
+                        {cat === 'Todos' ? '🎒 Todos' : cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-                {/* Lista de Resultados Agrupados por Nivel */}
-                <div className="flex flex-col gap-4">
+                {/* Grid Inteligente de Cartas */}
+                <div className="flex flex-col gap-5">
                   {[1, 2, 3].map(lvl => {
                     const groupItems = filteredItems.filter(i => i.level === lvl)
                     if (groupItems.length === 0) return null
 
+                    const isLocked = false
                     const title = lvl === 1 
                       ? 'Nivel 1 — Neófito Culinario 🥔' 
                       : lvl === 2 
@@ -1224,8 +1233,8 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
 
                     return (
                       <div key={lvl} className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] text-[var(--accent-gold)] tracking-wider font-bold uppercase">{title}</span>
+                        <div className="flex items-center justify-between mb-1 px-1">
+                          <span className="text-[9px] text-[var(--accent-gold)] tracking-wider font-extrabold uppercase">{title}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           {groupItems.map(item => (
@@ -1235,16 +1244,18 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                                 setSelectedIngredient(item)
                                 fetchWikipediaIngredientDetail(item.name)
                               }}
-                              className="bg-[var(--bg-card)] border border-[var(--border-moss)] hover:border-[var(--accent-mint)]/30 rounded-2xl p-3 flex flex-col gap-2 transition-all text-left shadow-sm relative overflow-hidden tap-active"
+                              className="bg-[var(--bg-card)] border border-[var(--border-moss)] hover:border-[var(--accent-mint)]/30 rounded-2xl p-3 flex flex-col gap-2.5 transition-all text-left shadow-sm relative overflow-hidden tap-active"
                             >
-                              <div className="flex items-center justify-between z-10">
-                                <span className="text-[9px] text-[var(--accent-teal)] font-bold uppercase tracking-wider">
+                              <div className="flex items-center justify-between z-10 w-full">
+                                <span className="text-[8px] text-[var(--accent-teal)] font-bold uppercase tracking-wider truncate max-w-[80px]">
                                   {item.isTech ? '🧠 Técnica' : item.category}
                                 </span>
-                                <Badge color={item.energy.includes('Máximo') ? 'mint' : 'gold'}>{item.energy}</Badge>
+                                <Badge color={item.energy.includes('Máximo') || item.energy.includes('Supremo') ? 'mint' : 'gold'}>{item.energy.split(' ')[0]}</Badge>
                               </div>
-                              <h4 className="text-xs font-bold text-[var(--text-primary)] truncate z-10">{item.name}</h4>
-                              <p className="text-[9px] text-[var(--text-secondary)] font-medium z-10">📍 {item.origin}</p>
+                              <div className="flex flex-col gap-0.5 z-10">
+                                <h4 className="text-xs font-black text-[var(--text-primary)] truncate">{item.name}</h4>
+                                <p className="text-[8px] text-[var(--text-secondary)] font-medium">📍 {item.origin}</p>
+                              </div>
                             </button>
                           ))}
                         </div>
@@ -1253,89 +1264,104 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                   })}
                   
                   {filteredItems.length === 0 && (
-                    <div className="py-8 text-center text-xs text-[var(--text-secondary)] bg-[var(--bg-card)] border border-dashed border-[var(--border-moss)] rounded-2xl">
-                      No se encontraron resultados para tu búsqueda.
+                    <div className="py-12 text-center text-xs text-[var(--text-secondary)] bg-[var(--bg-card)] border border-dashed border-[var(--border-moss)] rounded-2xl flex flex-col items-center justify-center gap-2">
+                      <span className="text-2xl">🔍</span>
+                      <span>No se encontraron insumos o técnicas en esta categoría.</span>
                     </div>
                   )}
                 </div>
               </>
             )
           })()}
-          {/* Tarjeta de Detalle del ingrediente seleccionado */}
-          {selectedIngredient && (
-            <VegiCard glow className="p-4 border-[var(--accent-mint)]/20 flex flex-col gap-3 animate-float-in mt-2 bg-gradient-to-b from-[var(--bg-card)] to-[var(--bg-elevated)]">
-              <div className="flex items-start justify-between">
-                <div>
-                  <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-widest">{selectedIngredient.category}</span>
-                  <h3 className="text-base font-black text-[var(--text-primary)] font-['Space_Grotesk'] mt-0.5">{selectedIngredient.name}</h3>
+
+          {/* Modal Bottom-Sheet Premium de Detalle — via Portal para escapar overflow */}
+          {selectedIngredient && ReactDOM.createPortal(
+            <div
+              style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}
+            >
+              {/* Backdrop clickable para cerrar */}
+              <div style={{ position: 'absolute', inset: 0 }} onClick={() => setSelectedIngredient(null)} />
+
+              {/* Contenedor del Bottom Sheet */}
+              <div
+                style={{ position: 'relative', width: '100%', maxHeight: '85dvh', background: 'linear-gradient(to bottom, var(--bg-card), var(--bg-elevated))', borderTop: '1px solid var(--border-moss)', borderRadius: '32px 32px 0 0', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 -8px 40px rgba(0,0,0,0.5)', overflowY: 'auto', scrollbarWidth: 'thin' }}
+              >
+                {/* Indicador de arrastre iOS pill */}
+                <div style={{ width: '48px', height: '6px', background: 'var(--border-moss)', borderRadius: '999px', margin: '0 auto 4px', flexShrink: 0 }} />
+
+                <div className="flex items-start justify-between">
+                  <div>
+                    <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-widest bg-[var(--accent-mint)]/10 px-2 py-0.5 rounded-md border border-[var(--accent-mint)]/20">{selectedIngredient.category}</span>
+                    <h3 className="text-lg font-black text-[var(--text-primary)] font-['Space_Grotesk'] mt-2">{selectedIngredient.name}</h3>
+                  </div>
+                  <button onClick={() => setSelectedIngredient(null)} className="p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 tap-active">
+                    <X size={14} />
+                  </button>
                 </div>
-                <button onClick={() => setSelectedIngredient(null)} className="p-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400">
-                  <X size={12} />
+
+                {/* Imagen Gastronómica Dynamic */}
+                <div className="h-36 w-full rounded-2xl overflow-hidden relative border border-[var(--border-moss)]/50 flex-shrink-0 shadow-inner">
+                  <img
+                    src={selectedIngredient.image}
+                    alt={selectedIngredient.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <span className="absolute bottom-3 left-3 text-[8px] text-gray-300">Fotografía botánica de alta resolución</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs py-3.5 border-y border-[var(--border-moss)]/50">
+                  <div>
+                    <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-wider block">Zona de Origen</span>
+                    <p className="font-extrabold text-[var(--text-primary)] mt-0.5">📍 {selectedIngredient.origin}</p>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-wider block">Fuerza Cósmica (Prana)</span>
+                    <p className="font-extrabold text-[var(--accent-gold)] mt-0.5">☯️ {selectedIngredient.energy}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[9px] text-[var(--accent-teal)] font-bold uppercase tracking-wider block">Propiedades y Misticismo</span>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed italic">
+                    "{selectedIngredient.description}"
+                  </p>
+                  {selectedIngredient.tips && (
+                    <div className="text-[10px] text-[var(--accent-mint)] leading-relaxed mt-1 font-semibold bg-[var(--accent-mint)]/10 border border-[var(--accent-mint)]/20 p-2.5 rounded-xl">
+                      💡 Tip de Alquimia: {selectedIngredient.tips}
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-2xl p-3.5 shadow-inner">
+                  <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-wider block mb-1">Extracción Enciclopédica (Wikipedia)</span>
+                  {wikiIngInfo.loading ? (
+                    <div className="py-3 text-center flex items-center justify-center gap-2 text-xs text-[var(--text-secondary)]">
+                      <RefreshCw size={12} className="animate-spin text-[var(--accent-mint)]" />
+                      <span>Invocando sabiduría colectiva...</span>
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed line-clamp-5">
+                      {wikiIngInfo.summary}
+                    </p>
+                  )}
+                </div>
+
+                {/* Botón de gamificación para consagrar lectura */}
+                <button
+                  onClick={() => {
+                    dispatch({ type: 'COMPLETE_CHALLENGE', payload: { country: 'none', xp: 20 } })
+                    setShowConfetti(true)
+                    setTimeout(() => setShowConfetti(false), 2000)
+                    setSelectedIngredient(null)
+                  }}
+                  className="w-full bg-[var(--accent-mint)] hover:bg-[var(--accent-mint)]/90 text-[var(--bg-primary)] font-black text-xs py-3.5 rounded-2xl tap-active transition-all shadow-md flex items-center justify-center gap-1.5 mt-2"
+                >
+                  <span>☯️</span> Consagrar Sabiduría (+20 XP)
                 </button>
               </div>
-
-              {/* Imagen Gastronómica Dynamic */}
-              <div className="h-32 w-full rounded-xl overflow-hidden relative border border-[var(--border-moss)]/50">
-                <img 
-                  src={selectedIngredient.image} 
-                  alt={selectedIngredient.name} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <span className="absolute bottom-2 left-2 text-[8px] text-gray-300">Fotografía botánica de alta resolución</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs py-2 border-y border-[var(--border-moss)]/50">
-                <div>
-                  <span className="text-[9px] text-[var(--text-secondary)] uppercase">Zona de Origen</span>
-                  <p className="font-bold text-[var(--text-primary)]">{selectedIngredient.origin}</p>
-                </div>
-                <div>
-                  <span className="text-[9px] text-[var(--text-secondary)] uppercase">Fuerza Cósmica (Prana)</span>
-                  <p className="font-bold text-[var(--accent-gold)]">{selectedIngredient.energy}</p>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-[9px] text-[var(--accent-teal)] font-bold uppercase tracking-wider block mb-1">Propiedades y Misticismo</span>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed italic">
-                  "{selectedIngredient.description}"
-                </p>
-                {selectedIngredient.tips && (
-                  <p className="text-[10px] text-[var(--accent-mint)] leading-relaxed mt-1 font-semibold">
-                    💡 Tips: {selectedIngredient.tips}
-                  </p>
-                )}
-              </div>
-
-              <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl p-3">
-                <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-wider block mb-1">Extracción Enciclopédica (Wikipedia)</span>
-                {wikiIngInfo.loading ? (
-                  <div className="py-2 text-center flex items-center justify-center gap-1.5 text-xs text-[var(--text-secondary)]">
-                    <RefreshCw size={10} className="animate-spin text-[var(--accent-mint)]" />
-                    <span>Invocando sabiduría colectiva...</span>
-                  </div>
-                ) : (
-                  <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed line-clamp-4">
-                    {wikiIngInfo.summary}
-                  </p>
-                )}
-              </div>
-
-              {/* Botón de gamificación para consagrar lectura */}
-              <button
-                onClick={() => {
-                  dispatch({ type: 'COMPLETE_CHALLENGE', payload: { country: 'none', xp: 20 } })
-                  // Efecto Confeti local
-                  setShowConfetti(true)
-                  setTimeout(() => setShowConfetti(false), 2000)
-                  setSelectedIngredient(null)
-                }}
-                className="w-full bg-[var(--accent-mint)] text-[var(--bg-primary)] font-black text-xs py-3 rounded-xl tap-active transition-all shadow-md flex items-center justify-center gap-1.5"
-              >
-                <span>☯️</span> Consagrar Sabiduría (+20 XP)
-              </button>
-            </VegiCard>
+            </div>,
+            document.body
           )}
         </div>
       )}
