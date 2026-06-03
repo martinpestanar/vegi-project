@@ -857,13 +857,13 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
     try {
       // 1. Base local premium
       const mockIngredients = [
-        { id: 9003, name: 'Manzana Silvestre', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?q=80&w=350&auto=format&fit=crop', category: 'Frutas', origin: 'Región Templada', energy: 'Sattva', level: 1, description: 'Representa la vitalidad y el frescor pránico. Excelente regulador de digestión.' },
         { id: 11352, name: 'Papa Amarilla Nativa', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?q=80&w=350&auto=format&fit=crop', category: 'Tubérculos', origin: 'Andes', energy: 'Tamas / Sattva', level: 1, description: 'Tubérculo de enraizamiento profundo. Proporciona estabilidad y carbohidratos complejos.' },
         { id: 9901, name: 'Activación de Granos', isTech: true, image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Universal', energy: 'Sattva Máximo', level: 1, description: 'Remojo en medio ácido para desactivar antinutrientes (ácido fítico) y liberar enzimas vitales.' },
         { id: 12104, name: 'Coco Rallado Orgánico', image: 'https://images.unsplash.com/photo-1589820296156-2454bb8a6ad1?q=80&w=350&auto=format&fit=crop', category: 'Frutos Secos', origin: 'Tailandia', energy: 'Sattva', level: 2, description: 'Aporta grasas nobles que lubrican los tejidos y calman el exceso de fuego (Pitta).' },
         { id: 11216, name: 'Jengibre Sagrado (Khing)', image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=350&auto=format&fit=crop', category: 'Especias', origin: 'Sudoeste de Asia', energy: 'Rajas / Sattva', level: 2, description: 'Raíz ígnea que enciende el Agni (fuego digestivo) y purifica las toxinas acumuladas.' },
         { id: 20081, name: 'Harina de Quinua Real', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=350&auto=format&fit=crop', category: 'Granos Ancestrales', origin: 'Andes del Perú', energy: 'Sattva Máximo', level: 3, description: 'Grano sagrado rico en lisina y aminoácidos esenciales, secado al sol.' },
         { id: 11962, name: 'Champiñón Shiitake Silvestre', image: 'https://images.unsplash.com/photo-1579619077671-5509746f332c?q=80&w=350&auto=format&fit=crop', category: 'Hongos', origin: 'Asia Oriental', energy: 'Sattva', level: 3, description: 'Hongo que conecta con la sabiduría de la tierra. Potente modulador inmunológico.' },
+        { id: 12555, name: 'Mijo Pelado Orgánico', image: 'https://images.unsplash.com/photo-1574316071802-0d684efa7bf5?q=80&w=350&auto=format&fit=crop', category: 'Granos Ancestrales', origin: 'América del Norte / Asia', energy: 'Sattva', level: 1, description: 'El mijo es un grano antiguo libre de gluten, sumamente alcalinizante y de muy fácil digestión.', tips: 'Lávalo bien antes de hervir. Queda delicioso como base cremosa en desayunos o sustituto de arroz.' },
         { id: 9902, name: 'Fermentación Láctica', isTech: true, image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Europa / Asia', energy: 'Sattva Máximo', level: 3, description: 'Transmutación biológica mediante lactobacterias que sintetizan vitaminas y mejoran microbiota digestiva.' }
       ]
 
@@ -877,7 +877,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
       let apiItems = []
       try {
         const response = await fetch(
-          `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=6`
+          `https://world.openfoodfacts.org/api/v2/search?categories_tags=plant-based-foods-and-beverages&generic_name_es=${encodeURIComponent(query)}&fields=code,product_name,image_url,categories,origins,countries,generic_name,brands&limit=6`
         )
         if (response.ok) {
           const data = await response.json()
@@ -893,7 +893,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                   category: category.charAt(0).toUpperCase() + category.slice(1),
                   origin: p.origins || p.countries || 'Global',
                   energy: 'Sattva / Prana Neutro',
-                  level: 1, // Desbloqueado para todos
+                  level: 1,
                   description: `Insumo vegetal consultado en la red global: ${p.generic_name || 'Ingrediente natural de alimentación conscientiente.'}`,
                   tips: `Ideal para incorporar en recetas plant-based. Marca registrada: ${p.brands || 'Natural'}.`
                 }
@@ -901,7 +901,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
           }
         }
       } catch (err) {
-        console.warn("Open Food Facts API no disponible, usando fallback local:", err)
+        console.warn("Open Food Facts API no disponible:", err)
       }
 
       // Mezclar resultados locales con los de la API externa
