@@ -855,27 +855,70 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
     }
     setSearchingEnc(true)
     try {
-      // 1. Consultar Spoonacular API (Modo público/Simulado o directo para ingredientes vegetales con mapeo)
+      // 1. Base local premium
       const mockIngredients = [
-        { id: 9003, name: 'Manzana Silvestre', image: 'apple.jpg', category: 'Frutas', origin: 'Región Templada Central', energy: 'Sattva', description: 'Representa la vitalidad y el frescor pránico. Excelente regulador de digestión.' },
-        { id: 20081, name: 'Harina de Quinua Real', image: 'quinoa-flour.png', category: 'Granos Ancestrales', origin: 'Andes (Perú/Bolivia)', energy: 'Sattva Máximo', description: 'Grano sagrado rico en lisina y aminoácidos esenciales, secado al sol.' },
-        { id: 12104, name: 'Coco Rallado Orgánico', image: 'coconut.jpg', category: 'Frutos Secos', origin: 'Trópicos de Tailandia', energy: 'Sattva', description: 'Aporta grasas nobles que lubrican los tejidos y calman el exceso de fuego (Pitta).' },
-        { id: 11216, name: 'Jengibre Sagrado (Khing)', image: 'ginger.png', category: 'Especias', origin: 'Sudoeste de Asia', energy: 'Rajas / Sattva', description: 'Raíz ígnea que enciende el Agni (fuego digestivo) y purifica las toxinas acumuladas.' },
-        { id: 11352, name: 'Papa Amarilla Nativa', image: 'potatoes-yellow.png', category: 'Tubérculos', origin: 'Región Andina', energy: 'Tamas / Sattva', description: 'Tubérculo de enraizamiento profundo. Proporciona estabilidad y carbohidratos complejos.' },
-        { id: 11962, name: 'Champiñón Shiitake Silvestre', image: 'shiitake.png', category: 'Hongos', origin: 'Asia Oriental', energy: 'Sattva', description: 'Hongo que conecta con la sabiduría de la tierra. Potente modulador inmunológico.' },
-        { id: 20137, name: 'Semillas de Kiwicha (Amaranto)', image: 'amaranth.png', category: 'Granos Ancestrales', origin: 'Vales Interandinos', energy: 'Sattva Máximo', description: 'Semilla sagrada azteca e inca cargada de calcio, hierro y un perfil proteico insuperable.' },
-        { id: 16112, name: 'Miso Rojo Fermentado', image: 'miso.png', category: 'Fermentados', origin: 'Japón / Asia', energy: 'Sattva / Rajas', description: 'Pasta de soja fermentada cargada de enzimas digestivas y prebióticos curativos.' }
+        { id: 9003, name: 'Manzana Silvestre', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?q=80&w=350&auto=format&fit=crop', category: 'Frutas', origin: 'Región Templada', energy: 'Sattva', level: 1, description: 'Representa la vitalidad y el frescor pránico. Excelente regulador de digestión.' },
+        { id: 11352, name: 'Papa Amarilla Nativa', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?q=80&w=350&auto=format&fit=crop', category: 'Tubérculos', origin: 'Andes', energy: 'Tamas / Sattva', level: 1, description: 'Tubérculo de enraizamiento profundo. Proporciona estabilidad y carbohidratos complejos.' },
+        { id: 9901, name: 'Activación de Granos', isTech: true, image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Universal', energy: 'Sattva Máximo', level: 1, description: 'Remojo en medio ácido para desactivar antinutrientes (ácido fítico) y liberar enzimas vitales.' },
+        { id: 12104, name: 'Coco Rallado Orgánico', image: 'https://images.unsplash.com/photo-1589820296156-2454bb8a6ad1?q=80&w=350&auto=format&fit=crop', category: 'Frutos Secos', origin: 'Tailandia', energy: 'Sattva', level: 2, description: 'Aporta grasas nobles que lubrican los tejidos y calman el exceso de fuego (Pitta).' },
+        { id: 11216, name: 'Jengibre Sagrado (Khing)', image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=350&auto=format&fit=crop', category: 'Especias', origin: 'Sudoeste de Asia', energy: 'Rajas / Sattva', level: 2, description: 'Raíz ígnea que enciende el Agni (fuego digestivo) y purifica las toxinas acumuladas.' },
+        { id: 20081, name: 'Harina de Quinua Real', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=350&auto=format&fit=crop', category: 'Granos Ancestrales', origin: 'Andes del Perú', energy: 'Sattva Máximo', level: 3, description: 'Grano sagrado rico en lisina y aminoácidos esenciales, secado al sol.' },
+        { id: 11962, name: 'Champiñón Shiitake Silvestre', image: 'https://images.unsplash.com/photo-1579619077671-5509746f332c?q=80&w=350&auto=format&fit=crop', category: 'Hongos', origin: 'Asia Oriental', energy: 'Sattva', level: 3, description: 'Hongo que conecta con la sabiduría de la tierra. Potente modulador inmunológico.' },
+        { id: 9902, name: 'Fermentación Láctica', isTech: true, image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Europa / Asia', energy: 'Sattva Máximo', level: 3, description: 'Transmutación biológica mediante lactobacterias que sintetizan vitaminas y mejoran microbiota digestiva.' }
       ]
 
-      // Filtrar resultados por coincidencia
-      const filtered = mockIngredients.filter(i => 
+      // Filtrar resultados locales
+      const localFiltered = mockIngredients.filter(i => 
         i.name.toLowerCase().includes(query.toLowerCase()) || 
-        i.category.toLowerCase().includes(query.toLowerCase()) ||
-        i.origin.toLowerCase().includes(query.toLowerCase())
+        i.category.toLowerCase().includes(query.toLowerCase())
       )
 
-      // Intentar además consulta real de Spoonacular si el usuario tiene red (fallback gracefully)
-      setEncResults(filtered)
+      // 2. Consulta dinámica a Open Food Facts API (Soporta millones de ingredientes y trae fotos reales)
+      let apiItems = []
+      try {
+        const response = await fetch(
+          `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=6`
+        )
+        if (response.ok) {
+          const data = await response.json()
+          if (data.products && data.products.length > 0) {
+            apiItems = data.products
+              .filter(p => p.product_name && p.product_name.trim() !== '')
+              .map((p, idx) => {
+                const category = p.categories_tags?.[0]?.replace('en:', '')?.replace('-', ' ') || 'Alimento'
+                return {
+                  id: p.id || `off-${idx}-${Date.now()}`,
+                  name: p.product_name,
+                  image: p.image_url || 'https://images.unsplash.com/photo-1547514701-42782101795e?q=80&w=350', // fallback vegetal
+                  category: category.charAt(0).toUpperCase() + category.slice(1),
+                  origin: p.origins || p.countries || 'Global',
+                  energy: 'Sattva / Prana Neutro',
+                  level: 1, // Desbloqueado para todos
+                  description: `Insumo vegetal consultado en la red global: ${p.generic_name || 'Ingrediente natural de alimentación conscientiente.'}`,
+                  tips: `Ideal para incorporar en recetas plant-based. Marca registrada: ${p.brands || 'Natural'}.`
+                }
+              })
+          }
+        }
+      } catch (err) {
+        console.warn("Open Food Facts API no disponible, usando fallback local:", err)
+      }
+
+      // Mezclar resultados locales con los de la API externa
+      const mergedResults = [...localFiltered, ...apiItems]
+      
+      // Remover duplicados por nombre
+      const uniqueResults = []
+      const namesSeen = new Set()
+      for (const item of mergedResults) {
+        const nameKey = item.name.toLowerCase().trim()
+        if (!namesSeen.has(nameKey)) {
+          namesSeen.add(nameKey)
+          uniqueResults.push(item)
+        }
+      }
+
+      setEncResults(uniqueResults)
     } catch (e) {
       console.error(e)
     } finally {
@@ -1108,7 +1151,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
           {/* Sub-selectores dentro de la Enciclopedia para dividir Insumos de Técnicas */}
           {(() => {
             // Todos los ingredientes y técnicas unificados
-            const allDatabaseItems = [
+            const premiumItems = [
               { id: 9003, name: 'Manzana Silvestre', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?q=80&w=350&auto=format&fit=crop', category: 'Frutas', origin: 'Región Templada', energy: 'Sattva', level: 1, description: 'Representa la vitalidad y el frescor pránico. Excelente regulador de digestión.' },
               { id: 11352, name: 'Papa Amarilla Nativa', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?q=80&w=350&auto=format&fit=crop', category: 'Tubérculos', origin: 'Andes', energy: 'Tamas / Sattva', level: 1, description: 'Tubérculo de enraizamiento profundo. Proporciona estabilidad y carbohidratos complejos.' },
               { id: 9901, name: 'Activación de Granos', isTech: true, image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Universal', energy: 'Sattva Máximo', level: 1, description: 'Remojo en medio ácido para desactivar antinutrientes (ácido fítico) y liberar enzimas vitales.' },
@@ -1119,18 +1162,16 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
               { id: 9902, name: 'Fermentación Láctica', isTech: true, image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=350&auto=format&fit=crop', category: 'Técnica Alquímica', origin: 'Europa / Asia', energy: 'Sattva Máximo', level: 3, description: 'Transmutación biológica mediante lactobacterias que sintetizan vitaminas y mejoran microbiota digestiva.' }
             ]
 
+            // Si hay búsqueda activa, agregar los ingredientes consultados por la API
+            const allDatabaseItems = encQuery.trim() !== '' ? encResults : premiumItems
+
             // Filtrar según el input de búsqueda global y según la pestaña local seleccionada
             const filteredItems = allDatabaseItems.filter(item => {
-              const matchesSearch = !encQuery || 
-                item.name.toLowerCase().includes(encQuery.toLowerCase()) ||
-                item.category.toLowerCase().includes(encQuery.toLowerCase()) ||
-                item.origin.toLowerCase().includes(encQuery.toLowerCase())
-
               const matchesTab = localTab === 'all' || 
                 (localTab === 'ingredients' && !item.isTech) || 
                 (localTab === 'techniques' && item.isTech)
 
-              return matchesSearch && matchesTab
+              return matchesTab
             })
 
             return (
@@ -1141,7 +1182,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                     onClick={() => setLocalTab('all')}
                     className={`flex-1 py-1 rounded transition-all ${localTab === 'all' ? 'bg-[var(--accent-teal)]/20 text-[var(--accent-teal)]' : 'text-gray-400'}`}
                   >
-                    Todos ({allDatabaseItems.filter(i => !encQuery || i.name.toLowerCase().includes(encQuery.toLowerCase())).length})
+                    Todos ({filteredItems.length})
                   </button>
                   <button
                     onClick={() => setLocalTab('ingredients')}
