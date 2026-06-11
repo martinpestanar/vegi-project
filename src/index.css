@@ -176,3 +176,857 @@ html, body {
   pointer-events: none;
   animation: confetti-pop 1s ease-out forwards;
 }
+
+/* ====================================================
+   ACADEMIA PLANT-BASED — Estilos Especiales
+   ==================================================== */
+
+/* Ocultar scrollbar pero mantener scroll funcional */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Barra de desplazamiento personalizada y elegante para scrolls horizontales */
+.scrollbar-custom {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-mint) transparent;
+}
+.scrollbar-custom::-webkit-scrollbar {
+  height: 4px;
+}
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: var(--border-moss);
+  border-radius: 4px;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-mint);
+}
+
+
+/* Tipografía de las lecciones: legibilidad máxima */
+.prose-lesson p,
+.prose-lesson div {
+  color: var(--text-primary);
+  line-height: 1.75;
+}
+
+.prose-lesson strong {
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.prose-lesson em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* Animación de entrada para secciones de lección */
+@keyframes section-in {
+  from { transform: translateX(12px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-section-in {
+  animation: section-in 0.3s ease-out forwards;
+}
+
+/* Tarjeta de quiz con feedback visual */
+@keyframes quiz-correct {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes quiz-wrong {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.quiz-correct { animation: quiz-correct 0.3s ease-out; }
+.quiz-wrong { animation: quiz-wrong 0.3s ease-out; }
+
+/* Badge unlock celebration */
+@keyframes badge-appear {
+  0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+  70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.animate-badge { animation: badge-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Progress bar animada */
+@keyframes progress-fill {
+  from { width: 0%; }
+}
+
+.animate-progress { animation: progress-fill 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* ====================================================
+   ESTILOS DE LECTURA EDITORIAL (MEMENTO CULINARIO)
+   ==================================================== */
+
+/* Temas de lectura */
+.theme-reading-sepia {
+  background-color: #f6ebd4 !important;
+  color: #3b2f1e !important;
+  --border-moss: #e4d7bf;
+}
+.theme-reading-sepia .prose-lesson p,
+.theme-reading-sepia .prose-lesson div,
+.theme-reading-sepia .prose-lesson strong,
+.theme-reading-sepia .prose-lesson span,
+.theme-reading-sepia .prose-lesson h4 {
+  color: #3b2f1e !important;
+}
+.theme-reading-sepia .bg-\[var\(--bg-card\)\] {
+  background-color: #fdf6e7 !important;
+  border-color: #e4d7bf !important;
+}
+.theme-reading-sepia .border-\[var\(--border-moss\)\] {
+  border-color: #e4d7bf !important;
+}
+
+.theme-reading-mint {
+  background-color: #f3f8f5 !important;
+  color: #1a2e22 !important;
+  --border-moss: #dae5dd;
+}
+.theme-reading-mint .prose-lesson p,
+.theme-reading-mint .prose-lesson div,
+.theme-reading-mint .prose-lesson strong,
+.theme-reading-mint .prose-lesson span,
+.theme-reading-mint .prose-lesson h4 {
+  color: #1a2e22 !important;
+}
+.theme-reading-mint .bg-\[var\(--bg-card\)\] {
+  background-color: #ffffff !important;
+  border-color: #dae5dd !important;
+}
+.theme-reading-mint .border-\[var\(--border-moss\)\] {
+  border-color: #dae5dd !important;
+}
+
+.theme-reading-dark {
+  background-color: #070b09 !important;
+  color: #f0fdf4 !important;
+  --border-moss: #172b20;
+}
+.theme-reading-dark .prose-lesson p,
+.theme-reading-dark .prose-lesson div,
+.theme-reading-dark .prose-lesson strong,
+.theme-reading-dark .prose-lesson span,
+.theme-reading-dark .prose-lesson h4 {
+  color: #f0fdf4 !important;
+}
+.theme-reading-dark .bg-\[var\(--bg-card\)\] {
+  background-color: #0e1612 !important;
+  border-color: #172b20 !important;
+}
+.theme-reading-dark .border-\[var\(--border-moss\)\] {
+  border-color: #172b20 !important;
+}
+
+/* Tipografías de lectura */
+.font-reading-serif {
+  font-family: 'Georgia', 'Merriweather', 'Times New Roman', serif !important;
+  letter-spacing: 0.01em;
+}
+.font-reading-serif p {
+  line-height: 1.85 !important;
+}
+
+.font-reading-sans {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  letter-spacing: -0.01em;
+}
+.font-reading-sans p {
+  line-height: 1.7 !important;
+}
+
+/* Tamaños de lectura */
+.text-reading-sm p, .text-reading-sm li, .text-reading-sm td {
+  font-size: 0.825rem !important;
+}
+.text-reading-md p, .text-reading-md li, .text-reading-md td {
+  font-size: 0.925rem !important;
+}
+.text-reading-lg p, .text-reading-lg li, .text-reading-lg td {
+  font-size: 1.05rem !important;
+}
+
+/* Callouts temáticos */
+.callout-card {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border-width: 1px;
+  border-style: solid;
+  margin: 20px 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.callout-card-science {
+  background: rgba(2, 132, 199, 0.05);
+  border-color: rgba(2, 132, 199, 0.25);
+  border-left-width: 4px;
+  border-left-color: rgba(2, 132, 199, 0.9);
+}
+
+.callout-card-tip {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.25);
+  border-left-width: 4px;
+  border-left-color: rgba(16, 185, 129, 0.9);
+}
+
+.callout-card-alchemy {
+  background: rgba(217, 119, 6, 0.05);
+  border-color: rgba(217, 119, 6, 0.25);
+  border-left-width: 4px;
+  border-left-color: rgba(217, 119, 6, 0.9);
+}
+
+.callout-card-cook {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.25);
+  border-left-width: 4px;
+  border-left-color: rgba(239, 68, 68, 0.9);
+}
+
+/* Citas editoriales */
+.editorial-quote {
+  position: relative;
+  padding: 20px 24px;
+  margin: 24px 0;
+  font-style: italic;
+  font-weight: 400 !important;
+  background: rgba(0, 0, 0, 0.02);
+  border-left: 3px solid var(--accent-mint);
+  border-radius: 4px 16px 16px 4px;
+}
+.editorial-quote div,
+.editorial-quote p,
+.editorial-quote span {
+  font-weight: 400 !important;
+  color: var(--text-secondary) !important;
+}
+.theme-reading-sepia .editorial-quote {
+  background: rgba(59, 47, 30, 0.03);
+}
+.theme-reading-dark .editorial-quote {
+  background: rgba(240, 253, 244, 0.03);
+}
+
+/* Glosario Tooltip Mejorado */
+.glossary-tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500;
+  line-height: 1.4;
+  width: 220px;
+  z-index: 50;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+  pointer-events: none;
+  animation: float-in 0.2s ease-out;
+}
+
+.glossary-tooltip:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #0f172a transparent transparent transparent;
+  z-index: 50;
+  pointer-events: none;
+}
+
+
+/* Shake animation for cell crushing */
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-3px, 2px) rotate(-1deg); }
+  50% { transform: translate(3px, -2px) rotate(1deg); }
+  75% { transform: translate(-2px, -2px) rotate(0deg); }
+}
+.animate-shake { animation: shake 0.3s ease-in-out infinite; }
+
+/* Animaciones de Dopamina */
+@keyframes flame-burn {
+  0%, 100% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 4px #f97316); }
+  50% { transform: scale(1.15) rotate(2deg); filter: drop-shadow(0 0 10px #ef4444) drop-shadow(0 0 15px #f59e0b); }
+}
+.animate-flame-burn {
+  animation: flame-burn 0.8s ease-in-out infinite;
+}
+
+@keyframes float-xp {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.1); opacity: 0; }
+}
+.animate-float-xp {
+  animation: float-xp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes box-shake {
+  0%, 100% { transform: rotate(0); }
+  20%, 60% { transform: rotate(-5deg); }
+  40%, 80% { transform: rotate(5deg); }
+}
+.animate-box-shake {
+  animation: box-shake 0.5s ease-in-out infinite;
+}
+
+/* ====================================================
+   ESTILOS DE DIAGRAMAS DE TEXTO (PREMIUM LIGHT & CLEAN SCHEMATICS)
+   ==================================================== */
+.prose-lesson .diagram-container,
+.diagram-container {
+  position: relative;
+  background: #f7faf8 !important; /* Soft herbal white/light gray-mint */
+  border: 1px solid #dae5dd !important; /* Elegant clean botanical leaf border */
+  border-radius: 18px;
+  padding: 20px;
+  margin: 24px 0;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.05), 0 8px 16px -6px rgba(0, 0, 0, 0.02);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  font-size: 11.5px !important;
+  line-height: 1.6 !important;
+}
+
+/* Clean grid lines pattern */
+.prose-lesson .diagram-container::before,
+.diagram-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(16, 185, 129, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.02) 1px, transparent 1px);
+  background-size: 14px 14px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.prose-lesson .diagram-container .diagram-header,
+.diagram-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-b: 1px solid rgba(16, 185, 129, 0.15) !important;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+  font-size: 9.5px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #059669 !important; /* Forest Green for header */
+  font-family: 'Space Grotesk', system-ui, sans-serif !important;
+}
+
+.prose-lesson .diagram-container .diagram-scroll,
+.diagram-scroll {
+  position: relative;
+  z-index: 2;
+  overflow-x: auto;
+  white-space: pre;
+  padding-bottom: 6px;
+  color: #1e293b !important; /* Pure Slate charcoal for high contrast text */
+}
+
+/* Force all normal lines/words inside visualizer to be readable slate by default */
+.prose-lesson .diagram-container .diagram-scroll div,
+.diagram-scroll div {
+  color: #1e293b !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+.diagram-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.diagram-scroll::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 10px;
+}
+.diagram-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.35);
+}
+
+/* Character level styles */
+.prose-lesson .diagram-container .diagram-border,
+.diagram-border {
+  color: #10b981 !important; /* Clean emerald mint for boxes */
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+.prose-lesson .diagram-container .diagram-arrow,
+.diagram-arrow {
+  color: #d97706 !important; /* Warm gold/caramel for arrows */
+  font-weight: 800 !important;
+  animation: diagram-arrow-pulse 2s infinite ease-in-out;
+}
+
+.prose-lesson .diagram-container .diagram-note,
+.diagram-note {
+  color: #64748b !important; /* Slate gray for notes */
+  font-style: italic !important;
+  font-weight: normal !important;
+}
+
+.prose-lesson .diagram-container .diagram-parentheses,
+.diagram-parentheses {
+  color: #059669 !important; /* Forest Green for inner details */
+  opacity: 1 !important;
+  font-weight: 600 !important;
+}
+
+.prose-lesson .diagram-container .diagram-keyword,
+.diagram-keyword {
+  color: #0f172a !important; /* Bold charcoal for main keys */
+  font-weight: 700 !important;
+}
+
+@keyframes diagram-arrow-pulse {
+  0%, 100% { opacity: 0.85; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+/* ====================================================
+   ESTILOS DE LÍNEA DE TIEMPO INTERACTIVA (TIMELINE)
+   ==================================================== */
+.timeline-container {
+  position: relative;
+  padding-left: 28px;
+  margin: 24px 0;
+  border-left: 2px solid var(--border-moss);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  animation: float-in 0.4s ease-out forwards;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-badge {
+  position: absolute;
+  left: -38px;
+  top: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.timeline-item:hover .timeline-badge {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.timeline-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-moss);
+  border-radius: 14px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+  transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateX(2px);
+}
+
+.timeline-title {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-mint);
+  margin-bottom: 4px;
+}
+
+.timeline-text {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ====================================================
+   ESTILOS DE ESCALADOR DE RECETAS (RECIPE SCALER)
+   ==================================================== */
+.recipe-scaler-card {
+  border: 1px solid var(--border-moss);
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 20px 0;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+}
+
+.recipe-scaler-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.recipe-scaler-title {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.recipe-scaler-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.recipe-scaler-slider {
+  width: 100px;
+  accent-color: var(--accent-mint);
+  height: 4px;
+  background: var(--border-moss);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.recipe-scaler-badge {
+  font-size: 9px;
+  font-weight: 800;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent-mint);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ====================================================
+   GLOSARIO POR CATEGORÍAS (GLOSSARY BADGES)
+   ==================================================== */
+.glossary-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: help;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  margin: 0 2px;
+}
+
+/* Compuestos: Menta suave */
+.glossary-badge-compound {
+  background: rgba(16, 185, 129, 0.08) !important;
+  color: #047857 !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+.dark-theme .glossary-badge-compound {
+  background: rgba(46, 229, 157, 0.15) !important;
+  color: #2ee59d !important;
+  border-color: rgba(46, 229, 157, 0.3) !important;
+}
+
+/* Procesos: Dorado/Ámbar suave */
+.glossary-badge-process {
+  background: rgba(217, 119, 6, 0.08) !important;
+  color: #b45309 !important;
+  border-color: rgba(217, 119, 6, 0.2) !important;
+}
+.dark-theme .glossary-badge-process {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #f59e0b !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Estructuras/Otros: Azul espiritual suave */
+.glossary-badge-structure {
+  background: rgba(2, 132, 199, 0.08) !important;
+  color: #0369a1 !important;
+  border-color: rgba(2, 132, 199, 0.2) !important;
+}
+.dark-theme .glossary-badge-structure {
+  background: rgba(14, 165, 233, 0.15) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
+}
+
+.glossary-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* ====================================================
+   CHECKLIST INTERACTIVO DE HOJA (LEAF CHECKLIST)
+   ==================================================== */
+.leaf-checklist-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-moss);
+  margin: 8px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-items: flex-start;
+}
+
+.leaf-checklist-item:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.01);
+}
+
+.leaf-checklist-item.checked {
+  background: rgba(16, 185, 129, 0.03);
+  border-color: rgba(16, 185, 129, 0.2);
+  opacity: 0.8;
+}
+
+.leaf-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 2px solid var(--border-moss);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: var(--bg-card);
+  color: transparent;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.leaf-checklist-item.checked .leaf-checkbox {
+  background: var(--accent-mint);
+  border-color: var(--accent-mint);
+  color: var(--bg-card);
+}
+
+.leaf-checklist-text {
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  transition: all 0.2s ease;
+}
+
+.leaf-checklist-item.checked .leaf-checklist-text {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+/* ====================================================
+   ESTILOS DE PRÁCTICA DE COCINA / LABORATORIO (CULINARY LAB)
+   ==================================================== */
+.prose-lesson .lab-practice-card,
+.lab-practice-card {
+  border: 1px solid #dae5dd !important;
+  background: #f7faf8 !important;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.04);
+}
+
+.lab-practice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-b: 1px solid rgba(16, 185, 129, 0.15) !important;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.lab-practice-title {
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+}
+
+.lab-section-subtitle {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #059669 !important;
+  display: block;
+  margin-bottom: 8px !important;
+}
+
+.lab-materials-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-moss);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.lab-material-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+.lab-material-item:hover {
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.lab-material-item.checked {
+  background: rgba(16, 185, 129, 0.08) !important;
+  opacity: 0.7;
+}
+
+.lab-material-checkbox {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-moss);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: bold;
+  background: var(--bg-card);
+  color: transparent;
+  flex-shrink: 0;
+}
+
+.lab-material-item.checked .lab-material-checkbox {
+  background: var(--accent-mint) !important;
+  border-color: var(--accent-mint) !important;
+  color: var(--bg-card) !important;
+}
+
+.lab-material-item span {
+  color: var(--text-secondary) !important;
+}
+
+.lab-material-item.checked span {
+  text-decoration: line-through !important;
+}
+
+/* Step cards */
+.lab-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-moss);
+  border-radius: 14px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+}
+
+.lab-step-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.lab-step-card.completed {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  background: rgba(16, 185, 129, 0.02) !important;
+}
+
+.lab-step-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lab-step-badge {
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: var(--accent-mint) !important;
+  padding: 2px 6px !important;
+  border-radius: 6px !important;
+}
+
+.lab-step-title {
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+}
+
+.lab-step-text {
+  color: var(--text-secondary) !important;
+  line-height: 1.5 !important;
+}
+
+.lab-step-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-moss);
+  background: var(--bg-elevated);
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lab-step-btn:hover {
+  background: var(--border-moss);
+}
+
+.lab-step-btn.completed {
+  background: var(--accent-mint) !important;
+  color: var(--bg-card) !important;
+  border-color: var(--accent-mint) !important;
+}
+
+
+
