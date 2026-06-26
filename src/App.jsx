@@ -20,6 +20,8 @@ import { useCountryMedia } from './useCountryMedia'
 import { ENCYCLOPEDIA_DATABASE } from './encyclopediaData'
 import { enrichIngredient } from './utils/enrichIngredient'
 import AcademyScreen from './AcademyScreen'
+import PizzaLabScreen from './PizzaLabScreen'
+
 
 
 // ============================================================
@@ -1825,7 +1827,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
 }
 
 
-function KitchenScreen() {
+function KitchenScreen({ onOpenPizzaLab }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTechnique, setSelectedTechnique] = useState(null)
   const [selectedDay, setSelectedDay] = useState(null)
@@ -1869,6 +1871,28 @@ function KitchenScreen() {
         <p className="text-xs text-[var(--accent-teal)] uppercase tracking-widest font-semibold font-['Space_Grotesk']">Alquimia en Acción</p>
         <h2 className="text-xl font-bold text-[var(--text-primary)] font-['Space_Grotesk']">Mi Cocina Sagrada 🔪</h2>
       </div>
+
+      {/* Botón/Card para entrar al Laboratorio de Pizzas */}
+      <div 
+        onClick={onOpenPizzaLab}
+        className="cursor-pointer bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-elevated)] border border-[var(--accent-mint)]/20 hover:border-[var(--accent-mint)]/40 rounded-2xl p-4 shadow-sm flex items-center justify-between group transition-all tap-active"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">🍕</span>
+          <div>
+            <h3 className="text-sm font-black text-[var(--text-primary)] group-hover:text-[var(--accent-mint)] transition-colors">
+              Laboratorio de Pizzas Pro
+            </h3>
+            <p className="text-[10px] text-[var(--text-secondary)]">
+              Calculadora de masas de avena, quinua, cañihua y bitácora de ensayos.
+            </p>
+          </div>
+        </div>
+        <div className="w-8 h-8 rounded-full bg-[var(--accent-mint)]/10 text-[var(--accent-mint)] flex items-center justify-center group-hover:bg-[var(--accent-mint)] group-hover:text-[var(--bg-primary)] transition-all">
+          <ChevronRight size={16} />
+        </div>
+      </div>
+
 
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -2171,6 +2195,8 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [mockUserId] = useState("d3b07384-d113-4956-a5db-85d6b8a7c2be")
   const [selectedCountry, setSelectedCountry] = useState(null)
+  const [isPizzaLabActive, setIsPizzaLabActive] = useState(false)
+
 
   const toggleTheme = () => {
     setIsDarkMode(prev => !prev)
@@ -2220,6 +2246,16 @@ export default function App() {
           setSelectedCountry(null)
         }
       }
+
+      if (primaryTab === 'kitchen') {
+        if (parts[1] === 'pizzalab') {
+          setIsPizzaLabActive(true)
+        } else {
+          setIsPizzaLabActive(false)
+        }
+      } else {
+        setIsPizzaLabActive(false)
+      }
     }
 
     window.addEventListener('hashchange', handleHash)
@@ -2233,11 +2269,15 @@ export default function App() {
       case 'dashboard': return <DashboardScreen state={state} dispatch={dispatch} isSyncing={syncLoading} />
       case 'oracle': return <OracleScreen state={state} dispatch={dispatch} />
       case 'map': return <MapScreen state={state} dispatch={dispatch} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />
-      case 'kitchen': return <KitchenScreen />
+      case 'kitchen': 
+        return isPizzaLabActive 
+          ? <PizzaLabScreen onClose={() => window.location.hash = 'kitchen'} />
+          : <KitchenScreen onOpenPizzaLab={() => window.location.hash = 'kitchen/pizzalab'} />
       case 'academy': return <AcademyScreen dispatch={dispatch} />
       default: return null
     }
   }
+
 
   return (
     <div className={`relative w-full max-w-md mx-auto h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-2xl border-x border-[var(--border-moss)] overflow-hidden pb-20 ${isDarkMode ? 'dark-theme' : ''}`}>
