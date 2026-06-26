@@ -3,46 +3,66 @@ import {
   Calculator, ClipboardList, Timer, BookOpen, Sparkles, Plus, Star, 
   Trash, Play, Pause, RotateCcw, FileText, ChevronLeft, ChefHat, 
   Scale, Flame, Hourglass, Award, AlertCircle, CheckCircle2, ChevronRight,
-  BookOpenCheck
+  BookOpenCheck, Info, HelpCircle
 } from 'lucide-react'
 
-// CONSTANTES Y PRESETS DE MASAS SIN GLUTEN & VEGANAS
+// CONSTANTES Y PRESETS DE MASAS SIN GLUTEN & TRADICIONALES
 const DOUGH_PRESETS = {
   avena: {
     name: 'Base de Avena Activa',
+    shortName: 'Avena',
     emoji: '🌾',
+    isGlutenFree: true,
     flours: { base: 'Harina de Avena', starch: 'Almidón de Yuca' },
     ratioFlours: 70, // 70% Avena, 30% Yuca
-    hydration: 85, // Las harinas sin gluten absorben muchísima agua
+    hydration: 85, // Las harinas sin gluten absorben muchísimo líquido
     psyllium: 4, // % de Psyllium para elasticidad
     yeast: 2.5,
     salt: 2,
     oil: 3,
-    description: 'Masa suave, rica en fibra soluble. Ideal para digestión tranquila. Apta para un leudado medio.'
+    description: 'Masa suave, de sabor sutil y dulce, muy digestiva y rica en fibra. Apta para un leudado medio.'
   },
   quinua: {
     name: 'Base Ancestral de Quinua',
+    shortName: 'Quinua',
     emoji: '✨',
+    isGlutenFree: true,
     flours: { base: 'Harina de Quinua (Lavada)', starch: 'Fécula de Patata' },
     ratioFlours: 65, // 65% Quinua, 35% Fécula
-    hydration: 90, // Alta absorción
+    hydration: 90,
     psyllium: 5,
     yeast: 2.5,
     salt: 2,
     oil: 4,
-    description: 'Masa proteica de sabor terroso y nuez. Requiere buena hidratación y un reposo óptimo para atenuar las saponinas.'
+    description: 'Masa proteica de sabor terroso y de nuez. Requiere buena hidratación y un reposo óptimo para suavizar la saponina.'
   },
   canihua: {
     name: 'Base Pránica de Cañihua',
+    shortName: 'Cañihua',
     emoji: '🔴',
+    isGlutenFree: true,
     flours: { base: 'Harina de Cañihua', starch: 'Almidón de Yuca' },
-    ratioFlours: 60, // 60% Cañihua, 40% Yuca (la cañihua es más densa y rústica)
-    hydration: 95, // Altísima hidratación
+    ratioFlours: 60, // 60% Cañihua, 40% Yuca (la cañihua es más densa)
+    hydration: 95,
     psyllium: 5,
     yeast: 2.5,
     salt: 2,
     oil: 4,
     description: 'Masa rústica súper-nutritiva de color oscuro y sabor profundo. Alta presencia de antioxidantes. Excelente crocancia al pre-horneo.'
+  },
+  trigo: {
+    name: 'Masa de Trigo Tradicional',
+    shortName: 'Trigo (Gluten)',
+    emoji: '🍕',
+    isGlutenFree: false,
+    flours: { base: 'Harina de Trigo (Fuerza o 00)', starch: null },
+    ratioFlours: 100, // 100% Trigo
+    hydration: 65, // Hidratación tradicional para masas con gluten
+    psyllium: 0, // No necesita psyllium, tiene gluten natural
+    yeast: 1.5,
+    salt: 2.5,
+    oil: 2,
+    description: 'Masa clásica italiana (tipo napolitana). El gluten crea una red elástica que atrapa el gas de fermentación para un borde alveolado.'
   }
 }
 
@@ -89,14 +109,37 @@ const INITIAL_RECIPES = [
       '15ml Aceite de oliva'
     ],
     steps: [
-      'Mezclar and activar el psyllium con la mitad del agua templada hasta crear el gel aglutinante.',
+      'Mezclar y activar el psyllium con la mitad del agua templada hasta crear el gel aglutinante.',
       'Unificar los secos en un recipiente: harina de cañihua, almidón de yuca, levadura y sal.',
       'Incorporar el gel de psyllium y el agua restante. Amasar hasta homogeneizar la mezcla.',
       'Hacer un leudado en bloque de 90 minutos en un espacio oscuro y cálido.',
       'Estirar la masa fina sobre papel manteca. Esta masa de cañihua es rústica, por lo que un espesor de 5mm es ideal.',
-      'Pre-hornear a 240°C por 8-10 minutos hasta que la superficie se sienta seca y firme.',
+      'Pre-hornear a 240°C por 8-10 minutos hasta que la superficie se sientas seca y firme.',
       'Decorar con pesto de albahaca y espinacas, champiñones salteados y piñones activados.',
       'Hornear por 6 minutos más hasta que la base esté completamente crujiente.'
+    ]
+  },
+  {
+    id: 'napolitana-trigo',
+    title: 'Clásica Napolitana de Trigo (65% Hidratación)',
+    source: 'Tradición',
+    description: 'Masa tradicional con gluten, fermentada en frío por 24 horas.',
+    ingredients: [
+      '400g Harina de Fuerza (Trigo 00)',
+      '260ml Agua fría',
+      '6g Levadura seca o 2g levadura fresca',
+      '10g Sal fina de mar',
+      '8ml Aceite de oliva'
+    ],
+    steps: [
+      'Disolver la levadura en el agua y agregar el 90% de la harina. Mezclar hasta unir todo.',
+      'Agregar la sal y el resto de la harina. Amasar por 10-15 minutos en superficie limpia hasta que la masa quede lisa, elástica y pase la prueba de la ventana.',
+      'Añadir el aceite de oliva al final del amasado e integrarlo bien.',
+      'Dejar reposar la masa tapada a temperatura ambiente por 2 horas, luego formar bollos.',
+      'Colocar en un recipiente cerrado y llevar a refrigeración de 24 a 48 horas para una maduración lenta.',
+      'Sacar del refrigerador 3 horas antes de estirar para que pierda el frío.',
+      'Estirar con las manos empujando el gas hacia el borde (cornicione). Nunca usar rodillo.',
+      'Colocar salsa de tomate, mozzarella de búfala, aceite y hornear a temperatura máxima por 4-5 minutos.'
     ]
   }
 ]
@@ -176,7 +219,6 @@ export default function PizzaLabScreen({ onClose }) {
           if (prev <= 1) {
             clearInterval(timerIntervalRef.current)
             setTimerRunning(false)
-            // Vibrar o alertar si es posible
             if ('vibrate' in navigator) {
               navigator.vibrate([500, 200, 500])
             }
@@ -204,9 +246,13 @@ export default function PizzaLabScreen({ onClose }) {
   // Cálculos de panadero dinámicos
   const preset = DOUGH_PRESETS[selectedBase]
   const flourBaseGrams = Math.round((targetWeight * preset.ratioFlours) / 100)
-  const flourStarchGrams = Math.round((targetWeight * (100 - preset.ratioFlours)) / 100)
+  const flourStarchGrams = preset.flours.starch 
+    ? Math.round((targetWeight * (100 - preset.ratioFlours)) / 100)
+    : 0
   const waterGrams = Math.round((targetWeight * customHydration) / 100)
-  const psylliumGrams = Math.round((targetWeight * customPsyllium) / 100)
+  const psylliumGrams = preset.isGlutenFree 
+    ? Math.round((targetWeight * customPsyllium) / 100)
+    : 0
   const yeastGrams = Math.round((targetWeight * preset.yeast) / 100)
   const saltGrams = Math.round((targetWeight * preset.salt) / 100)
   const oilGrams = Math.round((targetWeight * preset.oil) / 100)
@@ -230,7 +276,6 @@ export default function PizzaLabScreen({ onClose }) {
       ...newExp
     }
     setExperiments([experiment, ...experiments])
-    // Reset form
     setNewExp({
       baseType: selectedBase,
       hydration: customHydration,
@@ -241,7 +286,6 @@ export default function PizzaLabScreen({ onClose }) {
       notes: '',
       title: ''
     })
-    // Scroll a la bitácora
     alert('📝 Experimento consagrado en tu bitácora.')
   }
 
@@ -256,7 +300,6 @@ export default function PizzaLabScreen({ onClose }) {
     e.preventDefault()
     if (!newRecipeTitle.trim() || !importText.trim()) return
 
-    // Estructurar pasos sencillos dividiendo por saltos de línea
     const parsedSteps = importText
       .split('\n')
       .map(line => line.trim())
@@ -344,12 +387,12 @@ export default function PizzaLabScreen({ onClose }) {
                 Fórmulas y Porcentajes de Panadero
               </h2>
               <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
-                Calcula la hidratación exacta y las proporciones necesarias para tu harina sin gluten base.
+                Calcula la hidratación exacta y las proporciones necesarias según el grano o harina que uses hoy.
               </p>
             </div>
 
             {/* Selector de Base */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-1.5">
               {Object.keys(DOUGH_PRESETS).map(key => {
                 const item = DOUGH_PRESETS[key]
                 const isSel = selectedBase === key
@@ -357,23 +400,33 @@ export default function PizzaLabScreen({ onClose }) {
                   <button
                     key={key}
                     onClick={() => setSelectedBase(key)}
-                    className={`p-3 rounded-2xl border text-center transition-all tap-active flex flex-col items-center gap-1 ${
+                    className={`p-2.5 rounded-2xl border text-center transition-all tap-active flex flex-col items-center justify-center gap-1 min-h-[72px] ${
                       isSel 
                         ? 'border-[var(--accent-mint)] bg-[var(--accent-mint)]/10 text-[var(--text-primary)] font-black' 
                         : 'border-[var(--border-moss)] bg-[var(--bg-card)] text-[var(--text-secondary)]'
                     }`}
                   >
                     <span className="text-xl">{item.emoji}</span>
-                    <span className="text-[10px] whitespace-nowrap">{item.name.split(' ')[2]}</span>
+                    <span className="text-[9px] font-bold leading-tight break-words text-center">
+                      {item.shortName}
+                    </span>
                   </button>
                 )
               })}
             </div>
 
             {/* Info Preset */}
-            <div className="p-3 bg-[var(--bg-elevated)]/60 rounded-2xl border border-[var(--border-moss)] text-xs text-[var(--text-secondary)] leading-relaxed">
-              <span className="font-bold text-[var(--text-primary)] block mb-0.5">💡 Prescripción de Alquimia:</span>
-              {preset.description}
+            <div className="p-3 bg-[var(--bg-elevated)]/60 rounded-2xl border border-[var(--border-moss)] text-xs text-[var(--text-secondary)] leading-relaxed flex gap-2.5">
+              <Info size={16} className="text-[var(--accent-mint)] flex-shrink-0 mt-0.5" />
+              <div>
+                <div className="font-bold text-[var(--text-primary)] mb-0.5 flex items-center gap-1.5">
+                  {preset.name} 
+                  <Badge color={preset.isGlutenFree ? 'mint' : 'purple'}>
+                    {preset.isGlutenFree ? 'Sin Gluten' : 'Con Gluten'}
+                  </Badge>
+                </div>
+                <p className="text-[10px] leading-relaxed">{preset.description}</p>
+              </div>
             </div>
 
             {/* Controles numéricos */}
@@ -398,74 +451,126 @@ export default function PizzaLabScreen({ onClose }) {
               {/* Hidratación */}
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="font-bold text-[var(--text-primary)]">Hidratación (Agua):</span>
+                  <span className="font-bold text-[var(--text-primary)]">Hidratación (Agua / Líquidos):</span>
                   <span className="font-black text-[var(--accent-teal)]">{customHydration} %</span>
                 </div>
                 <input 
                   type="range" 
-                  min="60" 
-                  max="110" 
-                  step="5"
+                  min={preset.isGlutenFree ? 70 : 50} 
+                  max={preset.isGlutenFree ? 110 : 80} 
+                  step="2"
                   value={customHydration}
                   onChange={(e) => setCustomHydration(parseInt(e.target.value))}
                   className="w-full accent-[var(--accent-teal)]"
                 />
+                <span className="text-[9px] text-[var(--text-muted)] mt-1 block">
+                  {preset.isGlutenFree 
+                    ? '⚠️ Las masas sin gluten necesitan mayor hidratación (80%+) porque carecen de red de gluten.' 
+                    : '💡 El trigo tradicional requiere menor hidratación (60% a 70%).'}
+                </span>
               </div>
 
-              {/* Psyllium Husk */}
-              <div>
-                <div className="flex justify-between text-xs mb-1.5">
-                  <span className="font-bold text-[var(--text-primary)]">Psyllium Husk (Aglutinante):</span>
-                  <span className="font-black text-[var(--accent-gold)]">{customPsyllium} %</span>
+              {/* Psyllium Husk (Oculto o bloqueado si tiene gluten) */}
+              {preset.isGlutenFree ? (
+                <div>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="font-bold text-[var(--text-primary)]">Psyllium Husk (Aglutinante):</span>
+                    <span className="font-black text-[var(--accent-gold)]">{customPsyllium} %</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="2" 
+                    max="8" 
+                    step="1"
+                    value={customPsyllium}
+                    onChange={(e) => setCustomPsyllium(parseInt(e.target.value))}
+                    className="w-full accent-[var(--accent-gold)]"
+                  />
+                  <span className="text-[9px] text-[var(--text-muted)] mt-1 block">
+                    Aporta la elasticidad y retención de gas necesaria que no tiene la avena/quinua.
+                  </span>
                 </div>
-                <input 
-                  type="range" 
-                  min="2" 
-                  max="8" 
-                  step="1"
-                  value={customPsyllium}
-                  onChange={(e) => setCustomPsyllium(parseInt(e.target.value))}
-                  className="w-full accent-[var(--accent-gold)]"
-                />
-              </div>
+              ) : (
+                <div className="bg-[var(--bg-primary)] p-2.5 rounded-xl border border-[var(--border-moss)] text-[10px] text-[var(--text-secondary)]">
+                  🚫 **Aglutinantes**: No se requiere **Psyllium Husk**. El trigo ya cuenta con gluten que proporciona la elasticidad de manera natural.
+                </div>
+              )}
             </div>
 
             {/* TABLA DE RESULTADO */}
             <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl overflow-hidden shadow-sm">
               <div className="p-3 bg-[var(--bg-elevated)] border-b border-[var(--border-moss)] flex justify-between items-center">
-                <span className="text-xs font-bold text-[var(--text-primary)]">Mise en Place (Harina base: {targetWeight}g)</span>
+                <span className="text-xs font-bold text-[var(--text-primary)]">Mise en Place (Secos totales: {targetWeight}g)</span>
                 <span className="text-[10px] bg-[var(--accent-mint)]/10 text-[var(--accent-mint)] px-2 py-0.5 rounded-full font-black">
                   Masa total: {totalWeightGrams}g
                 </span>
               </div>
               <div className="divide-y divide-[var(--border-moss)] text-xs">
+                {/* Harina Base */}
                 <div className="p-3 flex justify-between">
-                  <span className="text-[var(--text-secondary)] font-medium">🌾 {preset.flours.base} ({preset.ratioFlours}%)</span>
-                  <span className="font-bold text-[var(--text-primary)]">{flourBaseGrams} g</span>
+                  <div>
+                    <span className="font-bold text-[var(--text-primary)] block">🌾 Harina Base ({preset.ratioFlours}%)</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.base}</span>
+                  </div>
+                  <span className="font-bold text-[var(--text-primary)] self-center">{flourBaseGrams} g</span>
                 </div>
+                
+                {/* Harina / Fécula Secundaria (Si la hay) */}
+                {preset.flours.starch && (
+                  <div className="p-3 flex justify-between">
+                    <div>
+                      <span className="font-bold text-[var(--text-primary)] block">🍠 Fécula / Almidón ({100 - preset.ratioFlours}%)</span>
+                      <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.starch} (aporta suavidad)</span>
+                    </div>
+                    <span className="font-bold text-[var(--text-primary)] self-center">{flourStarchGrams} g</span>
+                  </div>
+                )}
+
+                {/* Agua */}
                 <div className="p-3 flex justify-between">
-                  <span className="text-[var(--text-secondary)] font-medium">🍠 {preset.flours.starch} ({100 - preset.ratioFlours}%)</span>
-                  <span className="font-bold text-[var(--text-primary)]">{flourStarchGrams} g</span>
+                  <div>
+                    <span className="font-bold text-[var(--accent-teal)] block">💧 Agua Tibia ({customHydration}%)</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Para hidratar y activar la levadura</span>
+                  </div>
+                  <span className="font-bold text-[var(--accent-teal)] self-center">{waterGrams} ml / g</span>
                 </div>
+
+                {/* Psyllium Husk (Solo sin gluten) */}
+                {preset.isGlutenFree && (
+                  <div className="p-3 flex justify-between">
+                    <div>
+                      <span className="font-bold text-[var(--accent-gold)] block">🌀 Psyllium Husk ({customPsyllium}%)</span>
+                      <span className="text-[9px] text-[var(--text-secondary)]">Aglutinante estructural y elasticidad</span>
+                    </div>
+                    <span className="font-bold text-[var(--accent-gold)] self-center">{psylliumGrams} g</span>
+                  </div>
+                )}
+
+                {/* Levadura */}
                 <div className="p-3 flex justify-between">
-                  <span className="text-[var(--text-secondary)] font-medium">💧 Agua tibia ({customHydration}%)</span>
-                  <span className="font-bold text-[var(--accent-teal)]">{waterGrams} ml / g</span>
+                  <div>
+                    <span className="font-bold text-[var(--text-primary)] block">🍞 Levadura Seca ({preset.yeast}%)</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Levadura de panadería instantánea</span>
+                  </div>
+                  <span className="font-bold text-[var(--text-primary)] self-center">{yeastGrams} g</span>
                 </div>
+
+                {/* Sal */}
                 <div className="p-3 flex justify-between">
-                  <span className="text-[var(--text-secondary)] font-medium">🌀 Psyllium Husk ({customPsyllium}%)</span>
-                  <span className="font-bold text-[var(--accent-gold)]">{psylliumGrams} g</span>
+                  <div>
+                    <span className="font-bold text-[var(--text-primary)] block">🧂 Sal Marina ({preset.salt}%)</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Aporte de sabor e inhibidor de levadura</span>
+                  </div>
+                  <span className="font-bold text-[var(--text-primary)] self-center">{saltGrams} g</span>
                 </div>
+
+                {/* Aceite */}
                 <div className="p-3 flex justify-between">
-                  <span className="text-[var(--text-secondary)] font-medium">🍞 Levadura seca instantánea ({preset.yeast}%)</span>
-                  <span className="font-bold text-[var(--text-primary)]">{yeastGrams} g</span>
-                </div>
-                <div className="p-3 flex justify-between">
-                  <span className="text-[var(--text-secondary)] font-medium">🧂 Sal marina fina ({preset.salt}%)</span>
-                  <span className="font-bold text-[var(--text-primary)]">{saltGrams} g</span>
-                </div>
-                <div className="p-3 flex justify-between">
-                  <span className="text-[var(--text-secondary)] font-medium">🫒 Aceite de Oliva ({preset.oil}%)</span>
-                  <span className="font-bold text-[var(--text-primary)]">{oilGrams} g</span>
+                  <div>
+                    <span className="font-bold text-[var(--text-primary)] block">🫒 Aceite de Oliva ({preset.oil}%)</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Otorga extensibilidad y sabor rústico</span>
+                  </div>
+                  <span className="font-bold text-[var(--text-primary)] self-center">{oilGrams} g</span>
                 </div>
               </div>
             </div>
@@ -489,21 +594,32 @@ export default function PizzaLabScreen({ onClose }) {
                 Mise en Place & Pasos Clave
               </h2>
               <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
-                Las masas sin gluten requieren de una estructura gelatinosa previa. Sigue los pasos para asegurar el éxito.
+                Las masas {preset.isGlutenFree ? 'sin gluten' : 'tradicionales'} tienen procesos diferentes. Sigue este orden de preparación.
               </p>
             </div>
 
-            {/* Checklist interactivo */}
+            {/* Checklist interactivo adaptado */}
             <div className="space-y-2.5">
-              {[
-                { id: 'm1', title: 'Pesar harinas y féculas por separado', details: 'Asegúrate de combinar los porcentajes exactos.' },
-                { id: 'm2', title: 'Gelificar el Psyllium Husk', details: 'Pesa el psyllium, mézclalo con la mitad de agua tibia de la fórmula y déjalo reposar por 10 min hasta que forme un gel espeso y gomoso.' },
-                { id: 'm3', title: 'Activar levadura seca', details: 'Disuelve la levadura en 50ml de agua tibia con una pizca de azúcar o sirope por 5 min hasta que espume.' },
-                { id: 'm4', title: 'Integración de Secos', details: 'Mezcla bien las harinas, el almidón de yuca y la sal en un bowl grande.' },
-                { id: 'm5', title: 'Unificación y Amasado', details: 'Agrega el gel de psyllium, la levadura activa, el resto del agua y el aceite. Amasa con manos húmedas. La consistencia es más parecida a una arcilla húmeda.' },
-                { id: 'm6', title: 'Estirar en papel manteca', details: 'Al no tener gluten, la masa es difícil de trasladar. Estírala con aceite directamente sobre papel para hornear.' },
-                { id: 'm7', title: 'Pre-calentado del horno al máximo', details: 'El calor intenso inicial es fundamental para inflar los bordes y formar estructura.' }
-              ].map((step, idx) => {
+              {(preset.isGlutenFree 
+                ? [
+                    { id: 'm1', title: 'Pesar harinas y féculas por separado', details: 'Combina avena/quinua/cañihua con el almidón de yuca.' },
+                    { id: 'm2', title: 'Gelificar el Psyllium Husk', details: 'Mezcla el psyllium husk con la mitad de agua tibia y reposa 10 min hasta crear un gel gomoso.' },
+                    { id: 'm3', title: 'Activar la Levadura', details: 'Disuelve la levadura en 50ml de agua tibia con una pizca de endulzante por 5 min hasta espumar.' },
+                    { id: 'm4', title: 'Mezclar Secos', details: 'Unifica las harinas y la sal en un bowl grande.' },
+                    { id: 'm5', title: 'Amasar sin Gluten', details: 'Agrega el gel de psyllium, la levadura activa, el resto del agua y el aceite. Amasa. Será húmeda y densa.' },
+                    { id: 'm6', title: 'Estirar sobre Papel Manteca', details: 'Añade aceite a tus manos y estira directamente sobre papel de horno. Evita que se desarme.' },
+                    { id: 'm7', title: 'Pre-horneo obligatorio', details: 'Hornea la masa sola (sin salsa ni queso) a 240°C por 8 min para fijar estructura.' }
+                  ]
+                : [
+                    { id: 'w1', title: 'Disolver levadura en agua fría', details: 'En trigo es preferible fermentación fría y lenta para desarrollar sabor.' },
+                    { id: 'w2', title: 'Integrar harina en 90%', details: 'Mezcla la harina con el agua y la levadura hasta formar una masa rústica.' },
+                    { id: 'w3', title: 'Agregar Sal y terminar harina', details: 'La sal endurece el gluten. Añádela a mitad del proceso.' },
+                    { id: 'w4', title: 'Amasado de Fuerza', details: 'Amasa enérgicamente por 10-12 min estirando y doblando hasta que quede lisa y elástica.' },
+                    { id: 'w5', title: 'Integrar Aceite de Oliva', details: 'Agrega el aceite al final para dar suavidad a la masa.' },
+                    { id: 'w6', title: 'Primer reposo a Temp. Ambiente', details: 'Coloca en bowl tapado por 2 horas hasta doblar su tamaño.' },
+                    { id: 'w7', title: 'Formar Bollos e ir a Frío', details: 'Divide en porciones individuales de 200g-250g y madura en refrigerador 24 horas.' }
+                  ]
+              ).map((step, idx) => {
                 const isChecked = checkedSteps[step.id] || false
                 return (
                   <div 
@@ -537,24 +653,24 @@ export default function PizzaLabScreen({ onClose }) {
               <button
                 onClick={() => {
                   setTimerType('leudado')
-                  setTimerMax(5400) // 1.5 Horas por defecto
-                  setTimeLeft(5400)
+                  setTimerMax(preset.isGlutenFree ? 5400 : 7200) // 1.5h vs 2h
+                  setTimeLeft(preset.isGlutenFree ? 5400 : 7200)
                   setActiveSubTab('timer')
                 }}
                 className="flex-1 bg-[var(--accent-teal)] hover:bg-[var(--accent-teal)]/90 text-white font-bold text-xs py-3 rounded-xl tap-active transition-all flex items-center justify-center gap-1.5"
               >
-                <Hourglass size={14} /> Leudado (1.5h)
+                <Hourglass size={14} /> Leudado ({preset.isGlutenFree ? '1.5h' : '2h'})
               </button>
               <button
                 onClick={() => {
                   setTimerType('horneado')
-                  setTimerMax(480) // 8 minutos
-                  setTimeLeft(480)
+                  setTimerMax(preset.isGlutenFree ? 480 : 300) // 8m vs 5m
+                  setTimeLeft(preset.isGlutenFree ? 480 : 300)
                   setActiveSubTab('timer')
                 }}
                 className="flex-1 bg-[var(--accent-gold)] hover:bg-[var(--accent-gold)]/90 text-white font-bold text-xs py-3 rounded-xl tap-active transition-all flex items-center justify-center gap-1.5"
               >
-                <Flame size={14} /> Pre-horneo (8m)
+                <Flame size={14} /> Horneo ({preset.isGlutenFree ? '8m' : '5m'})
               </button>
             </div>
           </div>
@@ -611,7 +727,6 @@ export default function PizzaLabScreen({ onClose }) {
             {/* Temporizador circular / display gigante */}
             <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center space-y-4">
               <div className="relative w-44 h-44 flex items-center justify-center rounded-full bg-[var(--bg-primary)] border-4 border-[var(--border-moss)] shadow-inner">
-                {/* Círculo de progreso sutil */}
                 <div className="text-3xl font-black text-[var(--text-primary)] font-['Space_Grotesk'] tracking-wider">
                   {formatTime(timeLeft)}
                 </div>
@@ -623,25 +738,19 @@ export default function PizzaLabScreen({ onClose }) {
               {/* Ajustar tiempos manualmente */}
               <div className="flex gap-2">
                 <button
-                  onClick={() => {
-                    setTimeLeft(prev => Math.max(0, prev - 60))
-                  }}
+                  onClick={() => setTimeLeft(prev => Math.max(0, prev - 60))}
                   className="px-3 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border-moss)] rounded-xl text-[10px] font-bold text-[var(--text-secondary)] tap-active"
                 >
                   -1 min
                 </button>
                 <button
-                  onClick={() => {
-                    setTimeLeft(prev => prev + 60)
-                  }}
+                  onClick={() => setTimeLeft(prev => prev + 60)}
                   className="px-3 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border-moss)] rounded-xl text-[10px] font-bold text-[var(--text-secondary)] tap-active"
                 >
                   +1 min
                 </button>
                 <button
-                  onClick={() => {
-                    setTimeLeft(prev => prev + 300)
-                  }}
+                  onClick={() => setTimeLeft(prev => prev + 300)}
                   className="px-3 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border-moss)] rounded-xl text-[10px] font-bold text-[var(--text-secondary)] tap-active"
                 >
                   +5 min
@@ -681,7 +790,7 @@ export default function PizzaLabScreen({ onClose }) {
                 1. Asegúrate de que el horno esté encendido a su temperatura máxima por al menos 30 minutos antes.
               </p>
               <p className="text-[10px] text-[var(--text-secondary)]">
-                2. Si usas masa de cañihua o avena, el pre-horneado directo del disco sin toppings evita que la humedad de la salsa ablande el centro.
+                2. Si usas masa de trigo tradicional, estira usando sémola para dar una base áspera y súper crocante.
               </p>
             </div>
           </div>
@@ -714,22 +823,24 @@ export default function PizzaLabScreen({ onClose }) {
                   type="text" 
                   value={newExp.title}
                   onChange={(e) => setNewExp(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder={`Ej: Cañihua crujiente con hidratación del 90%`}
+                  placeholder={`Ej: Quinua con hidratación al 90% y fécula de papa`}
                   className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-mint)]/40"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1">Grano Base:</label>
+                  <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1">Harina Base:</label>
                   <select 
                     value={newExp.baseType}
                     onChange={(e) => setNewExp(prev => ({ ...prev, baseType: e.target.value }))}
                     className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2.5 py-2 text-xs text-[var(--text-primary)] outline-none"
                   >
-                    <option value="avena">🌾 Avena</option>
-                    <option value="quinua">✨ Quinua</option>
-                    <option value="canihua">🔴 Cañihua</option>
+                    {Object.keys(DOUGH_PRESETS).map(key => (
+                      <option key={key} value={key}>
+                        {DOUGH_PRESETS[key].emoji} {DOUGH_PRESETS[key].shortName}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -793,7 +904,7 @@ export default function PizzaLabScreen({ onClose }) {
                 <textarea 
                   value={newExp.notes}
                   onChange={(e) => setNewExp(prev => ({ ...prev, notes: e.target.value }))}
-                  placeholder="Ej: Bordes esponjosos, pero requiere 10 gramos adicionales de psyllium..."
+                  placeholder="Ej: Borde crujiente y alveolado. Para la próxima reducir 5% de agua..."
                   rows="2"
                   className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-mint)]/40 resize-none font-sans"
                 />
@@ -836,7 +947,7 @@ export default function PizzaLabScreen({ onClose }) {
 
                     <div className="flex flex-wrap gap-1.5 text-[9px] text-gray-700">
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
-                        🌾 Base: {DOUGH_PRESETS[exp.baseType]?.name.split(' ')[2] || exp.baseType}
+                        {DOUGH_PRESETS[exp.baseType]?.emoji} Harina: {DOUGH_PRESETS[exp.baseType]?.shortName || exp.baseType}
                       </span>
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
                         💧 Hidr: {exp.hydration}%
