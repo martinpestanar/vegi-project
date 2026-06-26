@@ -12,7 +12,8 @@ import {
   ChevronRight, Award, Leaf, Sparkles,
   BarChart3, Clock, Calendar, Search,
   MicOff, Image, RefreshCw, Sun, Moon, WifiOff, BookOpen,
-  GraduationCap
+  GraduationCap, MoreHorizontal
+
 } from 'lucide-react'
 import { supabase } from './supabaseClient'
 import { useVegiSync } from './useVegiSync'
@@ -2051,13 +2052,11 @@ function KitchenScreen({ onOpenPizzaLab }) {
   )
 }
 
-function TabBar({ activeTab, setActiveTab, isDarkMode, toggleTheme }) {
+function TabBar({ activeTab, setActiveTab, onOpenMore }) {
   const tabs = [
     { id: 'dashboard', icon: Home, label: 'Inicio' },
     { id: 'oracle', icon: MessageCircle, label: 'Oráculo' },
-    { id: 'academy', icon: GraduationCap, label: 'Academia' },
-    { id: 'map', icon: Globe, label: 'Mapa' },
-    { id: 'kitchen', icon: ChefHat, label: 'Cocina' },
+    { id: 'pizzalab', icon: ChefHat, label: 'Pizza Lab' },
   ]
 
   return (
@@ -2089,20 +2088,21 @@ function TabBar({ activeTab, setActiveTab, isDarkMode, toggleTheme }) {
       })}
 
       <button
-        onClick={toggleTheme}
+        onClick={onOpenMore}
         className="flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all tap-active text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-        title="Cambiar tema"
+        title="Ver más opciones"
       >
         <div className="relative">
-          {isDarkMode ? <Sun size={22} strokeWidth={1.5} /> : <Moon size={22} strokeWidth={1.5} />}
+          <MoreHorizontal size={22} strokeWidth={1.5} />
         </div>
         <span className="text-[10px] font-medium text-[var(--text-secondary)]">
-          Tema
+          Más
         </span>
       </button>
     </nav>
   )
 }
+
 
 function vegiReducer(state, action) {
   switch (action.type) {
@@ -2196,6 +2196,8 @@ export default function App() {
   const [mockUserId] = useState("d3b07384-d113-4956-a5db-85d6b8a7c2be")
   const [selectedCountry, setSelectedCountry] = useState(null)
   const [isPizzaLabActive, setIsPizzaLabActive] = useState(false)
+  const [showMoreMenu, setShowMoreMenu] = useState(false)
+
 
 
   const toggleTheme = () => {
@@ -2229,7 +2231,7 @@ export default function App() {
       const parts = hash.substring(1).split('/')
       const primaryTab = parts[0] || 'dashboard'
 
-      const validTabs = ['dashboard', 'oracle', 'academy', 'map', 'kitchen']
+      const validTabs = ['dashboard', 'oracle', 'academy', 'map', 'kitchen', 'pizzalab']
       if (validTabs.includes(primaryTab)) {
         setActiveTab(primaryTab)
       }
@@ -2274,9 +2276,11 @@ export default function App() {
           ? <PizzaLabScreen onClose={() => window.location.hash = 'kitchen'} />
           : <KitchenScreen onOpenPizzaLab={() => window.location.hash = 'kitchen/pizzalab'} />
       case 'academy': return <AcademyScreen dispatch={dispatch} />
+      case 'pizzalab': return <PizzaLabScreen onClose={() => window.location.hash = 'dashboard'} />
       default: return null
     }
   }
+
 
 
   return (
@@ -2299,10 +2303,143 @@ export default function App() {
 
       <TabBar 
         activeTab={activeTab} 
-        setActiveTab={(tab) => window.location.hash = tab} 
-        isDarkMode={isDarkMode}
-        toggleTheme={toggleTheme}
+        setActiveTab={(tab) => {
+          window.location.hash = tab
+          setShowMoreMenu(false)
+        }} 
+        onOpenMore={() => setShowMoreMenu(true)}
       />
+
+      {/* MENU "MÁS" (BOTTOM SHEET) */}
+      {showMoreMenu && (
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex flex-col justify-end animate-float-in">
+          {/* Backdrop click to close */}
+          <div className="absolute inset-0 -z-10" onClick={() => setShowMoreMenu(false)} />
+          
+          {/* Contenido Bottom Sheet */}
+          <div className="bg-[var(--bg-card)] border-t border-[var(--border-moss)] rounded-t-3xl p-5 pb-8 space-y-4 shadow-2xl animate-float-in max-h-[85%] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-[var(--border-moss)] pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🌀</span>
+                <div>
+                  <h3 className="text-sm font-black text-[var(--text-primary)]">Módulos de Alquimia</h3>
+                  <p className="text-[10px] text-[var(--text-secondary)]">Explora otras dimensiones del prana culinario</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowMoreMenu(false)}
+                className="w-7 h-7 rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] flex items-center justify-center font-bold text-xs hover:bg-gray-200"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Listado de Módulos */}
+            <div className="space-y-3">
+              {/* Cocina */}
+              <button
+                onClick={() => {
+                  window.location.hash = 'kitchen'
+                  setShowMoreMenu(false)
+                }}
+                className="w-full text-left bg-[var(--bg-primary)] hover:bg-[var(--bg-elevated)] border border-[var(--border-moss)] rounded-2xl p-3 flex items-center justify-between group transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[var(--accent-mint)]/10 text-[var(--accent-mint)] flex items-center justify-center">
+                    <ChefHat size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent-mint)] transition-colors flex items-center gap-1.5">
+                      Cocina Sagrada
+                      <Badge color="mint">Listo</Badge>
+                    </h4>
+                    <p className="text-[9px] text-[var(--text-secondary)]">Planes semanales, insumos y técnicas pránicas</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-gray-400" />
+              </button>
+
+              {/* Academia */}
+              <button
+                onClick={() => {
+                  window.location.hash = 'academy'
+                  setShowMoreMenu(false)
+                }}
+                className="w-full text-left bg-[var(--bg-primary)] hover:bg-[var(--bg-elevated)] border border-[var(--border-moss)] rounded-2xl p-3 flex items-center justify-between group transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[var(--accent-teal)]/10 text-[var(--accent-teal)] flex items-center justify-center">
+                    <GraduationCap size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent-teal)] transition-colors flex items-center gap-1.5">
+                      Academia Pránica
+                      <Badge color="teal">Listo</Badge>
+                    </h4>
+                    <p className="text-[9px] text-[var(--text-secondary)]">Aprende sobre trofología, fermentos y ayurveda</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-gray-400" />
+              </button>
+
+              {/* Mapa */}
+              <button
+                onClick={() => {
+                  window.location.hash = 'map'
+                  setShowMoreMenu(false)
+                }}
+                className="w-full text-left bg-[var(--bg-primary)] hover:bg-[var(--bg-elevated)] border border-[var(--border-moss)] rounded-2xl p-3 flex items-center justify-between group transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[var(--accent-gold)]/10 text-[var(--accent-gold)] flex items-center justify-center">
+                    <Globe size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent-gold)] transition-colors flex items-center gap-1.5">
+                      Mapamundi de Prana
+                      <Badge color="gold">Listo</Badge>
+                    </h4>
+                    <p className="text-[9px] text-[var(--text-secondary)]">Explora insumos y tradiciones por países</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-gray-400" />
+              </button>
+
+              {/* Módulo en desarrollo */}
+              <div
+                className="w-full text-left bg-[var(--bg-primary)]/40 border border-dashed border-[var(--border-moss)] rounded-2xl p-3 flex items-center justify-between opacity-60"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center">
+                    <Award size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-[var(--text-primary)] flex items-center gap-1.5">
+                      Desafíos Culinarios
+                      <Badge color="purple">Desarrollo</Badge>
+                    </h4>
+                    <p className="text-[9px] text-[var(--text-secondary)]">Compite en torneos conscientes y acumula XP</p>
+                  </div>
+                </div>
+                <Lock size={12} className="text-gray-400 mr-1" />
+              </div>
+            </div>
+
+            {/* Fila de Herramientas Rápidas */}
+            <div className="border-t border-[var(--border-moss)] pt-4 flex gap-2 justify-between items-center text-xs">
+              <span className="text-[10px] text-[var(--text-secondary)] font-medium">Ajustes visuales:</span>
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-1.5 px-4 py-2 bg-[var(--bg-elevated)] hover:bg-gray-200 rounded-xl text-xs font-bold text-[var(--text-primary)] tap-active transition-all"
+              >
+                {isDarkMode ? <Sun size={14} className="text-yellow-500" /> : <Moon size={14} className="text-indigo-600" />}
+                Cambiar a modo {isDarkMode ? 'Claro' : 'Oscuro'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+
