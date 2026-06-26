@@ -11,12 +11,16 @@ import {
   Camera, Mic, Send, X, Check,
   ChevronRight, Award, Leaf, Sparkles,
   BarChart3, Clock, Calendar, Search,
-  MicOff, Image, RefreshCw, Sun, Moon, WifiOff, BookOpen
+  MicOff, Image, RefreshCw, Sun, Moon, WifiOff, BookOpen,
+  GraduationCap
 } from 'lucide-react'
 import { supabase } from './supabaseClient'
 import { useVegiSync } from './useVegiSync'
 import { useCountryMedia } from './useCountryMedia'
 import { ENCYCLOPEDIA_DATABASE } from './encyclopediaData'
+import { enrichIngredient } from './utils/enrichIngredient'
+import AcademyScreen from './AcademyScreen'
+
 
 // ============================================================
 // DATOS DE SIMULACIÓN (FALLBACK Y RESPUESTAS DEL ORÁCULO)
@@ -791,7 +795,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
       setCompletingChallenge(false)
       setTimeout(() => {
         setShowConfetti(false)
-        setSelectedCountry(null)
+        window.location.hash = 'map'
       }, 2500)
     }, 1200)
   }
@@ -848,8 +852,15 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
   const [searchingEnc, setSearchingEnc] = useState(false)
   const [encResults, setEncResults] = useState([])
   const [selectedIngredient, setSelectedIngredient] = useState(null)
-  const [wikiIngInfo, setWikiIngInfo] = useState({ summary: '', loading: false })
+  const [wikiIngInfo, setWikiIngInfo] = useState({ summary: '', image: null, loading: false })
   const [selectedCategoryPill, setSelectedCategoryPill] = useState('Todos')
+  const [modalTab, setModalTab] = useState('nutrition')
+
+  useEffect(() => {
+    if (selectedIngredient) {
+      setModalTab('nutrition')
+    }
+  }, [selectedIngredient])
 
   const searchIngredientsInApis = async (query) => {
     if (!query.trim()) {
@@ -873,25 +884,42 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
   }
 
   // Buscar en Wikipedia información del ingrediente seleccionado
-  const fetchWikipediaIngredientDetail = async (ingName) => {
-    setWikiIngInfo({ summary: '', loading: true })
+  const fetchWikipediaIngredientDetail = async (item) => {
+    const ingName = item.name;
+    setWikiIngInfo({ summary: '', image: null, loading: true })
+    
+    // Limpiar el nombre para Wikipedia (quitar descriptores comerciales y paréntesis)
+    const cleanWikiTitle = ingName
+      .replace(/Sagrado|Orgánico|Ecológico|del Nilo|de la Sabana|Activo|Activa/gi, "")
+      .replace(/\s*\(.*\)\s*/, "") // Quitar paréntesis
+      .trim();
+
     try {
+      // Usamos el motor de búsqueda (generator=search) para encontrar el artículo correspondiente
       const wikiRes = await fetch(
-        `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(ingName)}&format=json&origin=*`
+        `https://es.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(cleanWikiTitle)}&gsrlimit=1&prop=extracts|pageimages&exintro&explaintext&pithumbsize=400&format=json&origin=*`
       )
       if (wikiRes.ok) {
         const wikiData = await wikiRes.json()
         const pages = wikiData?.query?.pages
         if (pages) {
           const pageId = Object.keys(pages)[0]
-          const summary = pages[pageId]?.extract || `El ${ingName} es un insumo botánico fundamental en las cocinas del mundo, valorado tanto por sus propiedades gastronómicas como nutricionales.`
-          setWikiIngInfo({ summary, loading: false })
-          return
+          const page = pages[pageId]
+          if (page && pageId !== "-1") {
+            const summary = page.extract || `${item.description} Procede de ${item.origin}.`
+            const image = page.thumbnail?.source || null
+            setWikiIngInfo({ summary, image, loading: false })
+            return
+          }
         }
       }
-      setWikiIngInfo({ summary: `Detalles enciclopédicos sobre ${ingName} listos para asimilar culinariamente.`, loading: false })
+      
+      // Fallback premium y contextualizado basado en la base de datos
+      const fallbackSummary = `${item.description} Valorado tradicionalmente en la gastronomía de ${item.origin}, este insumo destaca por su densidad de nutrientes. Combina de forma sinérgica con ${item.pairing || 'preparaciones conscientes'}.`
+      setWikiIngInfo({ summary: fallbackSummary, image: null, loading: false })
     } catch (e) {
-      setWikiIngInfo({ summary: 'No se pudo invocar el extracto de Wikipedia en este momento.', loading: false })
+      const fallbackSummary = `${item.description} Valorado tradicionalmente en la gastronomía de ${item.origin}.`
+      setWikiIngInfo({ summary: fallbackSummary, image: null, loading: false })
     }
   }
 
@@ -1036,7 +1064,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                       <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
                         <span className="text-xs text-[var(--accent-gold)] font-medium">+{country.xp} XP disponibles</span>
                         <button
-                          onClick={() => setSelectedCountry(country)}
+                          onClick={() => window.location.hash = 'map/country/' + country.id}
                           className={`px-4 py-2 rounded-xl text-xs font-bold tap-active transition-all duration-300 ${
                             isUnlocked 
                               ? 'bg-[var(--accent-mint)] text-[var(--bg-primary)] shadow-md hover:shadow-lg scale-100 hover:scale-102' 
@@ -1080,7 +1108,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                   tips: 'Tómalo rallado en infusión tibia antes del almuerzo para activar tu sistema pránico basal.'
                 };
                 setSelectedIngredient(target);
-                fetchWikipediaIngredientDetail(target.name);
+                fetchWikipediaIngredientDetail(target);
               }}
               className="mt-3 bg-[var(--bg-primary)] hover:bg-[var(--accent-mint)] hover:text-black border border-[var(--border-moss)] text-xs text-[var(--accent-mint)] px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1 w-max shadow-sm"
             >
@@ -1241,9 +1269,9 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
                             <button
                               key={item.id}
                               onClick={() => {
-                                setSelectedIngredient(item)
-                                fetchWikipediaIngredientDetail(item.name)
-                              }}
+                                 setSelectedIngredient(item)
+                                 fetchWikipediaIngredientDetail(item)
+                               }}
                               className="bg-[var(--bg-card)] border border-[var(--border-moss)] hover:border-[var(--accent-mint)]/30 rounded-2xl p-3 flex flex-col gap-2.5 transition-all text-left shadow-sm relative overflow-hidden tap-active"
                             >
                               <div className="flex items-center justify-between z-10 w-full">
@@ -1275,109 +1303,300 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
           })()}
 
           {/* Modal Bottom-Sheet Premium de Detalle — via Portal para escapar overflow */}
-          {selectedIngredient && ReactDOM.createPortal(
-            <div
-              style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}
-            >
-              {/* Backdrop clickable para cerrar */}
-              <div style={{ position: 'absolute', inset: 0 }} onClick={() => setSelectedIngredient(null)} />
+          {(() => {
+            if (!selectedIngredient) return null;
+            const enriched = enrichIngredient(selectedIngredient);
+            if (!enriched) return null;
 
-              {/* Contenedor del Bottom Sheet */}
+            return ReactDOM.createPortal(
               <div
-                style={{ position: 'relative', width: '100%', maxHeight: '85dvh', background: 'linear-gradient(to bottom, var(--bg-card), var(--bg-elevated))', borderTop: '1px solid var(--border-moss)', borderRadius: '32px 32px 0 0', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 -8px 40px rgba(0,0,0,0.5)', overflowY: 'auto', scrollbarWidth: 'thin' }}
+                style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}
               >
-                {/* Indicador de arrastre iOS pill */}
-                <div style={{ width: '48px', height: '6px', background: 'var(--border-moss)', borderRadius: '999px', margin: '0 auto 4px', flexShrink: 0 }} />
+                {/* Backdrop clickable para cerrar */}
+                <div style={{ position: 'absolute', inset: 0 }} onClick={() => setSelectedIngredient(null)} />
 
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-widest bg-[var(--accent-mint)]/10 px-2 py-0.5 rounded-md border border-[var(--accent-mint)]/20">{selectedIngredient.category}</span>
-                    <h3 className="text-lg font-black text-[var(--text-primary)] font-['Space_Grotesk'] mt-2">{selectedIngredient.name}</h3>
+                {/* Contenedor del Bottom Sheet */}
+                <div
+                  style={{ position: 'relative', width: '100%', maxHeight: '85dvh', background: 'linear-gradient(to bottom, var(--bg-card), var(--bg-elevated))', borderTop: '1px solid var(--border-moss)', borderRadius: '32px 32px 0 0', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 -8px 40px rgba(0,0,0,0.5)', overflowY: 'auto', scrollbarWidth: 'thin' }}
+                >
+                  {/* Indicador de arrastre iOS pill */}
+                  <div style={{ width: '48px', height: '6px', background: 'var(--border-moss)', borderRadius: '999px', margin: '0 auto 4px', flexShrink: 0 }} />
+
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-widest bg-[var(--accent-mint)]/10 px-2 py-0.5 rounded-md border border-[var(--accent-mint)]/20">{enriched.category}</span>
+                      <h3 className="text-lg font-black text-[var(--text-primary)] font-['Space_Grotesk'] mt-2">{enriched.name}</h3>
+                    </div>
+                    <button onClick={() => setSelectedIngredient(null)} className="p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 tap-active">
+                      <X size={14} />
+                    </button>
                   </div>
-                  <button onClick={() => setSelectedIngredient(null)} className="p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 tap-active">
-                    <X size={14} />
+
+                  {/* Imagen Gastronómica Dynamic */}
+                  {(() => {
+                    const displayImage = enriched.image || enriched.wikiImage || wikiIngInfo.image;
+                    if (!displayImage) return null;
+
+                    return (
+                      <div className="h-32 w-full rounded-2xl overflow-hidden relative border border-[var(--border-moss)]/50 flex-shrink-0 shadow-inner">
+                        <img
+                          src={displayImage}
+                          alt={enriched.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <span className="absolute bottom-3 left-3 text-[8px] text-gray-300">Fotografía botánica de alta resolución</span>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="grid grid-cols-2 gap-3 text-xs py-2 border-y border-[var(--border-moss)]/30">
+                    <div>
+                      <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-wider block">Zona de Origen</span>
+                      <p className="font-extrabold text-[var(--text-primary)] mt-0.5">📍 {enriched.origin}</p>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-wider block">Fuerza Cósmica (Prana)</span>
+                      <p className="font-extrabold text-[var(--accent-gold)] mt-0.5">☯️ {enriched.energy}</p>
+                    </div>
+                  </div>
+
+                  {/* Selector de Pestañas de Detalle */}
+                  <div className="flex bg-[var(--bg-primary)] border border-[var(--border-moss)] p-0.5 rounded-xl text-[10px] font-bold">
+                    <button
+                      onClick={() => setModalTab('nutrition')}
+                      className={`flex-1 py-1.5 rounded-lg transition-all ${
+                        modalTab === 'nutrition' 
+                          ? 'bg-[var(--accent-teal)]/10 text-[var(--accent-teal)] shadow-sm' 
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      🧬 Nutrición
+                    </button>
+                    <button
+                      onClick={() => setModalTab('ayurveda')}
+                      className={`flex-1 py-1.5 rounded-lg transition-all ${
+                        modalTab === 'ayurveda' 
+                          ? 'bg-[var(--accent-gold)]/10 text-[var(--accent-gold)] shadow-sm' 
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      🕉️ Ayurveda & Sabores
+                    </button>
+                    <button
+                      onClick={() => setModalTab('dishes')}
+                      className={`flex-1 py-1.5 rounded-lg transition-all ${
+                        modalTab === 'dishes' 
+                          ? 'bg-[var(--accent-mint)]/10 text-emerald-800 shadow-sm' 
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      🍳 Platos y Recetas
+                    </button>
+                  </div>
+
+                  {/* Contenido según pestaña */}
+                  <div className="flex flex-col gap-3 min-h-[180px]">
+                    {modalTab === 'nutrition' && enriched.nutrition && (
+                      <div className="flex flex-col gap-3 animate-float-in text-left">
+                        {/* Indicadores de Macros */}
+                        <div className="grid grid-cols-4 gap-2">
+                          <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] p-2 rounded-xl text-center">
+                            <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-bold">Prot</span>
+                            <span className="text-xs font-black text-emerald-700">{enriched.nutrition.macros.protein.amount}</span>
+                            <span className="text-[8px] text-gray-500 block font-medium">{enriched.nutrition.macros.protein.pct}% VD</span>
+                          </div>
+                          <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] p-2 rounded-xl text-center">
+                            <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-bold">Carb</span>
+                            <span className="text-xs font-black text-amber-700">{enriched.nutrition.macros.carbs.amount}</span>
+                            <span className="text-[8px] text-gray-500 block font-medium">{enriched.nutrition.macros.carbs.pct}% VD</span>
+                          </div>
+                          <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] p-2 rounded-xl text-center">
+                            <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-bold">Grasas</span>
+                            <span className="text-xs font-black text-emerald-800">{enriched.nutrition.macros.fat.amount}</span>
+                            <span className="text-[8px] text-gray-500 block font-medium">{enriched.nutrition.macros.fat.pct}% VD</span>
+                          </div>
+                          <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] p-2 rounded-xl text-center">
+                            <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-bold">Fibra</span>
+                            <span className="text-xs font-black text-[var(--accent-teal)]">{enriched.nutrition.macros.fiber.amount}</span>
+                            <span className="text-[8px] text-gray-500 block font-medium">{enriched.nutrition.macros.fiber.pct}% VD</span>
+                          </div>
+                        </div>
+
+                        {/* Calorías y Glucémico */}
+                        <div className="flex justify-between items-center bg-[var(--bg-primary)] border border-[var(--border-moss)] px-3 py-2 rounded-xl text-xs">
+                          <div>
+                            <span className="text-[8px] text-[var(--text-secondary)] uppercase block font-semibold">Porción: {enriched.nutrition.portion}</span>
+                            <span className="font-black text-[var(--text-primary)]">🔥 {enriched.nutrition.calories} kcal</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[8px] text-[var(--text-secondary)] uppercase block font-semibold">Índice Glucémico</span>
+                            <span className={`font-black px-2 py-0.5 rounded-full text-[9px] border ${
+                              enriched.nutrition.glycemicIndex.value > 55 
+                                ? 'bg-red-50 text-red-700 border-red-200' 
+                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            }`}>
+                              {enriched.nutrition.glycemicIndex.category} ({enriched.nutrition.glycemicIndex.value})
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Micronutrientes destacados */}
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[9px] text-[var(--accent-teal)] font-bold uppercase tracking-wider">🧬 Micronutrientes & Vitaminas</span>
+                          <div className="grid grid-cols-1 gap-1.5">
+                            {enriched.nutrition.micros.map((m, idx) => (
+                              <div key={idx} className="bg-[var(--bg-primary)] border border-[var(--border-moss)] p-2 rounded-xl flex items-center justify-between gap-3 text-[11px]">
+                                <div className="flex-1">
+                                  <span className="font-bold text-[var(--text-primary)]">{m.name}</span>
+                                  <p className="text-[9px] text-[var(--text-secondary)] mt-0.5">{m.benefit}</p>
+                                </div>
+                                <span className="text-[10px] font-black text-[var(--accent-teal)] bg-[var(--accent-teal)]/10 px-2 py-1 rounded-md border border-[var(--accent-teal)]/20">
+                                  +{m.pct}% VD
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Alérgenos y Advertencias */}
+                        <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl text-[10px] text-amber-900">
+                          <span className="font-bold uppercase tracking-wider block mb-1">⚠️ Precauciones & Alquimia Culinaria</span>
+                          <p className="leading-relaxed font-medium">{enriched.nutrition.precautions}</p>
+                          <div className="flex gap-2 mt-2">
+                            {enriched.nutrition.allergens.gluten && <span className="bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.5 rounded text-[8px] font-bold">CON GLUTEN</span>}
+                            {!enriched.nutrition.allergens.gluten && <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[8px] font-bold">SIN GLUTEN</span>}
+                            {enriched.nutrition.allergens.nuts && <span className="bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.5 rounded text-[8px] font-bold">CON FRUTOS SECOS</span>}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {modalTab === 'ayurveda' && enriched.ayurveda && (
+                      <div className="flex flex-col gap-3.5 animate-float-in text-left">
+                        {/* Estado de Doshas */}
+                        <div className="flex gap-2 justify-around py-2.5 bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl">
+                          <div className="text-center">
+                            <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-bold">VATA</span>
+                            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                              enriched.ayurveda.doshas.vata === 'equilibra' 
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                : 'bg-red-50 text-red-700 border-red-200'
+                            }`}>
+                              {enriched.ayurveda.doshas.vata === 'equilibra' ? '↓ Calma' : '↑ Eleva'}
+                            </span>
+                          </div>
+                          <div className="text-center border-x border-[var(--border-moss)] px-4">
+                            <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-bold">PITTA</span>
+                            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                              enriched.ayurveda.doshas.pitta === 'equilibra' 
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                : 'bg-red-50 text-red-700 border-red-200'
+                            }`}>
+                              {enriched.ayurveda.doshas.pitta === 'equilibra' ? '↓ Calma' : '↑ Eleva'}
+                            </span>
+                          </div>
+                          <div className="text-center">
+                            <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-bold">KAPHA</span>
+                            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                              enriched.ayurveda.doshas.kapha === 'equilibra' 
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                : 'bg-red-50 text-red-700 border-red-200'
+                            }`}>
+                              {enriched.ayurveda.doshas.kapha === 'equilibra' ? '↓ Calma' : '↑ Eleva'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Descripción de Energía y Doshas */}
+                        <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] p-3 rounded-xl text-xs leading-relaxed">
+                          <span className="text-[9px] text-[var(--accent-gold)] font-bold uppercase block mb-1">Efecto Pránico</span>
+                          <p className="text-[var(--text-primary)] font-medium italic">"{enriched.ayurveda.doshaText}"</p>
+                          <div className="mt-2 text-[10px] flex gap-4 text-[var(--text-secondary)] font-medium">
+                            <span>Temperatura: <strong className="text-[var(--text-primary)] font-bold">{enriched.ayurveda.temperature}</strong></span>
+                            <span>Energía: <strong className="text-[var(--accent-gold)] font-bold">{enriched.energy}</strong></span>
+                          </div>
+                        </div>
+
+                        {/* Shad Rasa (6 Sabores) */}
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[9px] text-[var(--accent-gold)] font-bold uppercase tracking-wider">👅 Perfil de Sabores (Shad Rasa)</span>
+                          <div className="grid grid-cols-2 gap-2">
+                            {Object.entries(enriched.ayurveda.rasa).map(([taste, val]) => (
+                              <div key={taste} className="bg-[var(--bg-primary)] border border-[var(--border-moss)] px-3 py-1.5 rounded-xl flex items-center justify-between text-[11px]">
+                                <span className="capitalize text-[var(--text-secondary)] font-bold">{taste}</span>
+                                <span className="font-black flex gap-0.5">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <span key={i} className={i < val ? 'text-[var(--accent-gold)]' : 'text-gray-200'}>
+                                      ★
+                                    </span>
+                                  ))}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {modalTab === 'dishes' && enriched.dishes && (
+                      <div className="flex flex-col gap-3 animate-float-in text-left">
+                        <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-wider">🍳 Alquimia en el Plato</span>
+                        {enriched.dishes.map((dish, idx) => (
+                          <div key={idx} className="bg-[var(--bg-primary)] border border-[var(--border-moss)] p-3 rounded-xl flex flex-col gap-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-[var(--text-primary)]">{dish.name}</span>
+                              <span className={`text-[8px] font-black px-2 py-0.5 rounded-full border ${
+                                dish.type === 'Ancestral' 
+                                  ? 'bg-amber-50 text-amber-800 border-amber-200' 
+                                  : dish.type === 'Moderno' 
+                                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+                                    : 'bg-sky-50 text-sky-800 border-sky-200'
+                              }`}>
+                                {dish.type} • {dish.time}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed font-medium">{dish.description}</p>
+                            <div className="text-[9px] text-[var(--accent-mint)] font-black mt-0.5">
+                              ✨ Beneficio: {dish.benefit}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-2xl p-3 shadow-inner text-left">
+                    <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-wider block mb-1">Wikipedia (Extracto Histórico)</span>
+                    {wikiIngInfo.loading && !enriched.wikiSummary ? (
+                      <div className="py-2 text-center flex items-center justify-center gap-2 text-xs text-[var(--text-secondary)]">
+                        <RefreshCw size={10} className="animate-spin text-[var(--accent-mint)]" />
+                        <span>Sincronizando...</span>
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed line-clamp-3">
+                        {enriched.wikiSummary || wikiIngInfo.summary}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Botón de gamificación para consagrar lectura */}
+                  <button
+                    onClick={() => {
+                      dispatch({ type: 'COMPLETE_CHALLENGE', payload: { country: 'none', xp: 20 } })
+                      setShowConfetti(true)
+                      setTimeout(() => setShowConfetti(false), 2000)
+                      setSelectedIngredient(null)
+                    }}
+                    className="w-full bg-[var(--accent-mint)] hover:bg-[var(--accent-mint)]/90 text-[var(--bg-primary)] font-black text-xs py-3.5 rounded-2xl tap-active transition-all shadow-md flex items-center justify-center gap-1.5 mt-1"
+                  >
+                    <span>☯️</span> Consagrar Sabiduría (+20 XP)
                   </button>
                 </div>
-
-                {/* Imagen Gastronómica Dynamic */}
-                <div className="h-36 w-full rounded-2xl overflow-hidden relative border border-[var(--border-moss)]/50 flex-shrink-0 shadow-inner">
-                  <img
-                    src={selectedIngredient.image}
-                    alt={selectedIngredient.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <span className="absolute bottom-3 left-3 text-[8px] text-gray-300">Fotografía botánica de alta resolución</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 text-xs py-3.5 border-y border-[var(--border-moss)]/50">
-                  <div>
-                    <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-wider block">Zona de Origen</span>
-                    <p className="font-extrabold text-[var(--text-primary)] mt-0.5">📍 {selectedIngredient.origin}</p>
-                  </div>
-                  <div>
-                    <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-wider block">Fuerza Cósmica (Prana)</span>
-                    <p className="font-extrabold text-[var(--accent-gold)] mt-0.5">☯️ {selectedIngredient.energy}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[9px] text-[var(--accent-teal)] font-bold uppercase tracking-wider block">Propiedades y Misticismo</span>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed italic">
-                    "{selectedIngredient.description}"
-                  </p>
-                  
-                  {selectedIngredient.nutrients && (
-                    <div className="mt-1 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 p-2.5 rounded-xl text-[10px] text-emerald-800 dark:text-emerald-300">
-                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-emerald-600 dark:text-emerald-400 mb-0.5">🧬 Alquimia Nutricional</span>
-                      {selectedIngredient.nutrients}
-                    </div>
-                  )}
-
-                  {selectedIngredient.pairing && (
-                    <div className="mt-1 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/50 p-2.5 rounded-xl text-[10px] text-orange-900 dark:text-orange-200">
-                      <span className="font-extrabold uppercase tracking-wider block text-[8px] text-orange-600 dark:text-orange-400 mb-0.5">🔮 Sinergia Culinaria</span>
-                      {selectedIngredient.pairing}
-                    </div>
-                  )}
-
-                  {selectedIngredient.tips && (
-                    <div className="text-[10px] text-[var(--accent-mint)] leading-relaxed mt-1 font-semibold bg-[var(--accent-mint)]/10 border border-[var(--accent-mint)]/20 p-2.5 rounded-xl">
-                      💡 Tip de Alquimia: {selectedIngredient.tips}
-                    </div>
-                  )}
-                </div>
-
-                <div className="bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-2xl p-3.5 shadow-inner">
-                  <span className="text-[9px] text-[var(--accent-mint)] font-bold uppercase tracking-wider block mb-1">Extracción Enciclopédica (Wikipedia)</span>
-                  {wikiIngInfo.loading ? (
-                    <div className="py-3 text-center flex items-center justify-center gap-2 text-xs text-[var(--text-secondary)]">
-                      <RefreshCw size={12} className="animate-spin text-[var(--accent-mint)]" />
-                      <span>Invocando sabiduría colectiva...</span>
-                    </div>
-                  ) : (
-                    <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed line-clamp-5">
-                      {wikiIngInfo.summary}
-                    </p>
-                  )}
-                </div>
-
-                {/* Botón de gamificación para consagrar lectura */}
-                <button
-                  onClick={() => {
-                    dispatch({ type: 'COMPLETE_CHALLENGE', payload: { country: 'none', xp: 20 } })
-                    setShowConfetti(true)
-                    setTimeout(() => setShowConfetti(false), 2000)
-                    setSelectedIngredient(null)
-                  }}
-                  className="w-full bg-[var(--accent-mint)] hover:bg-[var(--accent-mint)]/90 text-[var(--bg-primary)] font-black text-xs py-3.5 rounded-2xl tap-active transition-all shadow-md flex items-center justify-center gap-1.5 mt-2"
-                >
-                  <span>☯️</span> Consagrar Sabiduría (+20 XP)
-                </button>
-              </div>
-            </div>,
-            document.body
-          )}
+              </div>,
+              document.body
+            );
+          })()}
         </div>
       )}
 
@@ -1395,7 +1614,7 @@ function MapScreen({ state, dispatch, selectedCountry, setSelectedCountry }) {
             
             {/* Botón de Regresar */}
             <button 
-              onClick={() => setSelectedCountry(null)}
+              onClick={() => window.location.hash = 'map'}
               className="absolute top-4 left-4 bg-black/50 hover:bg-black/70 text-white rounded-full p-2.5 border border-white/15 tap-active z-50 transition-all flex items-center justify-center"
               title="Volver al mapa"
             >
@@ -1808,12 +2027,13 @@ function KitchenScreen() {
   )
 }
 
-function TabBar({ activeTab, setActiveTab }) {
+function TabBar({ activeTab, setActiveTab, isDarkMode, toggleTheme }) {
   const tabs = [
-    { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'oracle', icon: MessageCircle, label: 'El Oráculo' },
-    { id: 'map', icon: Globe, label: 'Mapamundi' },
-    { id: 'kitchen', icon: ChefHat, label: 'Mi Cocina' },
+    { id: 'dashboard', icon: Home, label: 'Inicio' },
+    { id: 'oracle', icon: MessageCircle, label: 'Oráculo' },
+    { id: 'academy', icon: GraduationCap, label: 'Academia' },
+    { id: 'map', icon: Globe, label: 'Mapa' },
+    { id: 'kitchen', icon: ChefHat, label: 'Cocina' },
   ]
 
   return (
@@ -1843,6 +2063,19 @@ function TabBar({ activeTab, setActiveTab }) {
           </button>
         )
       })}
+
+      <button
+        onClick={toggleTheme}
+        className="flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all tap-active text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        title="Cambiar tema"
+      >
+        <div className="relative">
+          {isDarkMode ? <Sun size={22} strokeWidth={1.5} /> : <Moon size={22} strokeWidth={1.5} />}
+        </div>
+        <span className="text-[10px] font-medium text-[var(--text-secondary)]">
+          Tema
+        </span>
+      </button>
     </nav>
   )
 }
@@ -1957,11 +2190,43 @@ export default function App() {
     dispatch({ type: 'SYNC_PROFILE', payload: newProfile })
   })
 
-  useEffect(() => {
+   useEffect(() => {
     if (profile) {
       dispatch({ type: 'SYNC_PROFILE', payload: profile })
     }
   }, [profile, dispatch])
+
+  // Router de Hash para Tab principal y vistas secundarias
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash || '#dashboard'
+      const parts = hash.substring(1).split('/')
+      const primaryTab = parts[0] || 'dashboard'
+
+      const validTabs = ['dashboard', 'oracle', 'academy', 'map', 'kitchen']
+      if (validTabs.includes(primaryTab)) {
+        setActiveTab(primaryTab)
+      }
+
+      if (primaryTab === 'map') {
+        if (parts[1] === 'country' && parts[2]) {
+          const country = COUNTRIES.find(c => c.id === parts[2])
+          if (country) {
+            setSelectedCountry(country)
+          } else {
+            setSelectedCountry(null)
+          }
+        } else {
+          setSelectedCountry(null)
+        }
+      }
+    }
+
+    window.addEventListener('hashchange', handleHash)
+    handleHash()
+
+    return () => window.removeEventListener('hashchange', handleHash)
+  }, [])
 
   const renderScreen = () => {
     switch (activeTab) {
@@ -1969,26 +2234,20 @@ export default function App() {
       case 'oracle': return <OracleScreen state={state} dispatch={dispatch} />
       case 'map': return <MapScreen state={state} dispatch={dispatch} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />
       case 'kitchen': return <KitchenScreen />
+      case 'academy': return <AcademyScreen dispatch={dispatch} />
       default: return null
     }
   }
 
   return (
     <div className={`relative w-full max-w-md mx-auto h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-2xl border-x border-[var(--border-moss)] overflow-hidden pb-20 ${isDarkMode ? 'dark-theme' : ''}`}>
-      <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
-        {!supabase && (
+      {!supabase && (
+        <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
           <span className="p-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center animate-pulse" title="Modo Alquimia Local (Supabase Offline)">
             <WifiOff size={14} />
           </span>
-        )}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full bg-[var(--bg-card)] border border-[var(--border-moss)] shadow-md text-[var(--text-primary)] tap-active hover:bg-[var(--bg-elevated)] flex items-center justify-center"
-          title="Cambiar tema"
-        >
-          {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
-      </div>
+        </div>
+      )}
 
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(46,229,157,0.03) 0%, rgba(14,165,233,0.02) 40%, transparent 80%)' }} />
@@ -1998,7 +2257,12 @@ export default function App() {
         {renderScreen()}
       </div>
 
-      <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TabBar 
+        activeTab={activeTab} 
+        setActiveTab={(tab) => window.location.hash = tab} 
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
+      />
     </div>
   )
 }

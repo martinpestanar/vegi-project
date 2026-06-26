@@ -1,6 +1,6 @@
 // ============================================================
 // VEGI — Base de Datos de Enciclopedia Plant-Based Expandida
-// Generada automáticamente con 330 ingredientes detallados
+// Generada automáticamente y enriquecida con datos de Wikipedia
 // ============================================================
 
 export const ENCYCLOPEDIA_DATABASE = [
@@ -15,7 +15,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Grano sagrado andino rico en lisina y aminoácidos esenciales, de muy fácil digestión.",
     "tips": "Lávala muy bien para retirar la saponina amarga antes de cocinar.",
     "nutrients": "Proteínas completas, Hierro, Magnesio",
-    "pairing": "Ensaladas templadas con aguacate y aderezo de limón"
+    "pairing": "Ensaladas templadas con aguacate y aderezo de limón",
+    "wikiSummary": "Chenopodium quinoa, también conocida como quinua,​ quínoa​ (ambas del quechua kinwa​) o quinoa​ (también del \nquechua kinuwa​), es una hierba perteneciente a la subfamilia Chenopodioideae de las amarantáceas. Técnicamente se trata de una semilla, pero se conoce y se clasifica como un grano integral. Es nativa del altiplano de los Andes que comparten  Argentina, Bolivia, Chile y Perú.​ Fueron las culturas prehispánicas las que la domesticaron y la cultivaron.​ Se cultivaba solo en la cordillera andina. Actualmente, los principales países productores son Argentina, Bolivia, Ecuador, Estados Unidos, Chile, Colombia y Perú, aunque su cultivo se está extendiendo a diversos países de Europa y Asia, con altos  niveles de rendimiento.​ Es una planta resistente, tolerante y eficiente en el uso del agua, con una extraordinaria adaptabilidad, puede soportar temperaturas desde −4 °C hasta 38 °C y crecer con humedades relativas desde el 40 % hasta el 70 %.​\nSu semilla provee todos los aminoácidos esenciales y su calidad proteica se equipara a la de la leche.​ Sus granos son altamente nutritivos y superan en valor biológico, calidad nutricional y funcional a los cereales tradicionales, tales como el trigo, el maíz, el arroz y la avena.​ Es uno de los cultivos seleccionados por la Organización de las Naciones Unidas para la Alimentación y la Agricultura (FAO) para ofrecer seguridad alimentaria.​ Es una planta que combina propiedades nutricionales y medicinales.​\nLa expansión del cultivo de quinua hacia regiones de menor altitud y mayor productividad agrícola ha generado consecuencias socioeconómicas negativas para los pequeños agricultores indígenas de las tierras altas andinas, zona de origen histórico de este cultivo. Desde 2014, el exceso de producción ha provocado una caída significativa de los precios en origen, dificultando la viabilidad económica de estos productores. Esta situación pone de manifiesto una contradicción: aunque los pueblos originarios son reconocidos por haber \"preservado\" la quinua a lo largo de generaciones, dicho reconocimiento no se ha traducido en una protección efectiva de su capacidad para beneficiarse económicamente del cultivo. Diversos investigadores, han señalado que los discursos que celebran la cultura indígena pueden, paradójicamente, funcionar como mecanismos de control que limitan las reivindicaciones políticas y económicas de estos pueblos. En el caso de la quinua, el lenguaje de la \"tutela cultural\" atribuido a las comunidades indígenas tiende a restringir su capacidad para reclamar derechos sobre los recursos genéticos del cultivo, dejándolos en una posición vulnerable frente a los procesos de globalización y comercialización a gran escala.​\nNo todas las variedades de quinua están exentas de gluten.​",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Quinoa_farmer_in_Cachilaya.JPG/500px-Quinoa_farmer_in_Cachilaya.JPG"
   },
   {
     "id": 30001,
@@ -28,7 +30,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Grano antiguo libre de gluten, sumamente alcalinizante, ideal para purificar el sistema.",
     "tips": "Queda excelente como base de porridge cremoso o sustituto de arroz.",
     "nutrients": "Silicio, Fibra soluble, Magnesio",
-    "pairing": "Porridge dulce con canela y manzana asada"
+    "pairing": "Porridge dulce con canela y manzana asada",
+    "wikiSummary": "La gastronomía togolesa es la cocina tradicional de Togo, país de África occidental. Los alimentos básicos en la cocina togolesa incluyen maíz, arroz, mijo, yuca, ñame, plátano y frijoles,​​ siendo el maíz es el más consumido por los togoleses. El pescado es una fuente importante de proteínas, y la carne a menudo se caza y se consume. La gente en Togo tiende a comer en casa, pero también hay restaurantes y puestos de comida.​",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Lunch_vendor.jpg/500px-Lunch_vendor.jpg"
   },
   {
     "id": 30002,
@@ -41,7 +45,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Semilla alcalinizante libre de gluten que aporta calor interno y fuerza física sostenida.",
     "tips": "Actívalo remojándolo toda la noche antes de cocinarlo o germinarlo.",
     "nutrients": "Rutina (flavonoide), Cobre, Fósforo",
-    "pairing": "Crepes con mantequilla de almendras y frutos rojos"
+    "pairing": "Crepes con mantequilla de almendras y frutos rojos",
+    "wikiSummary": "Fagopyrum esculentum, llamado comúnmente alforfón o trigo sarraceno, es una planta anual herbácea de la familia Polygonaceae cultivada por sus granos para su consumo humano y animal. Aunque se considera popularmente un cereal, no lo es, ya que no pertenece a la familia de las gramíneas, sino a las poligonáceas. Es más adecuado considerarlo un pseudocereal. Es originario del Asia Central. Aunque se ha cultivado tradicionalmente en muchos países, hoy en día los principales países productores son los mayores consumidores. Rusia produce el 50 % del total mundial, seguida por China (17 %) y Ucrania (7 %).​De su harina, en Japón se confeccionan los fideos soba. \n\n \n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Illustration_Fagopyrum_esculentum0_clean.jpg/500px-Illustration_Fagopyrum_esculentum0_clean.jpg"
   },
   {
     "id": 30003,
@@ -54,7 +60,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Cereal sagrado azteca de altísimo valor biológico por su perfil proteico superior.",
     "tips": "Puedes tostarlo en seco en una sartén tapada para hacer palomitas de amaranto.",
     "nutrients": "Escualeno, Calcio, Hierro",
-    "pairing": "Batidos energéticos y barras de granola caseras"
+    "pairing": "Batidos energéticos y barras de granola caseras",
+    "wikiSummary": "Amaranthus es un género de plantas herbáceas y anuales perteneciente a la familia Amaranthaceae. El nombre Amaranthus proviene del griego ἁμάpαvτos que significa 'flor que no se marchita', refiriéndose a las brácteas de la inflorescencia. Actualmente, sus especies se distribuyen por la mayor parte de las regiones de clima templado y cálido, posiblemente dispersadas por el ser humano. Varias de ellas son cultivadas tradicionalmente en el Centro de Sudamérica para aprovechar sus semillas o sus hojas como alimento (ver kiwicha/amaranto); otras se cultivan como ornamentales.​ Algunas de ellas son malas hierbas extendidas en los cultivos, en algunos casos, como A. retroflexus, de difícil erradicación.\nEl género comprende 565 especies descritas.​ Tras las últimas revisiones, hoy se aceptan 70 especies, 40 de las cuales son nativas de América. Está emparentado con el género Celosia.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Amaranthus_tricolor0.jpg/500px-Amaranthus_tricolor0.jpg"
   },
   {
     "id": 30004,
@@ -67,7 +75,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Arroz prohibido de los emperadores, de color púrpura oscuro, repleto de antioxidantes.",
     "tips": "Cocínalo con agua en proporción 1:2.5 a fuego lento durante 35 minutos.",
     "nutrients": "Antocianinas, Zinc, Vitamina E",
-    "pairing": "Salteados de vegetales con jengibre y tamari"
+    "pairing": "Salteados de vegetales con jengibre y tamari",
+    "wikiSummary": "Empedrado es una ciudad argentina, en la provincia de Corrientes, capital del departamento homónimo.\nLa ciudad de Empedrado se encuentra ubicada al noroeste de la provincia de Corrientes, 61 kilómetros al sur de la capital provincial. La RN 12 constituye la principal vía de acceso a la ciudad, la comunica con la capital provincial y otras ciudades importantes (Paraná, Santa Fe, Buenos Aires -de esta última dista 945 km-). También la comunican con la ciudad de Corrientes y con Buenos Aires un ramal ferroviario y la hidrovía constituida por el gran río Paraná.\nEmpedrado se ubica sobre la margen oriental del río Paraná y a poca distancia, al sur, de la confluencia del río de Empedrado con el Paraná, en la subregión de los Esteros Correntinos dentro de la denominada Llanura Platense en la Mesopotamia Argentina. El municipio comprende a las islas: Caballada, Montenegro, del Tabaco, Chimbolar, y Laurelti.\nLa altura media de la ciudad respecto al río Paraná es de 64 m s. n. m.\nLa temperatura media anual es de 20-21 °C, el clima es tropical con veranos cálidos e inviernos templados con muy raras heladas en julio.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Barrancas_de_Empedrado.jpg/500px-Barrancas_de_Empedrado.jpg"
   },
   {
     "id": 30005,
@@ -80,7 +90,8 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Semilla de planta acuática con perfil proteico superior y sabor silvestre similar a la nuez.",
     "tips": "Hérvelo hasta que el grano se abra y revele su interior blanco.",
     "nutrients": "Proteína, Fósforo, Vitaminas del grupo B",
-    "pairing": "Relleno de calabazas al horno con frutos secos"
+    "pairing": "Relleno de calabazas al horno con frutos secos",
+    "wikiSummary": "Arroz salvaje puede referirse a:\n\nEl arroz salvaje o uva de gato (Sedum album); planta de la familia de las crasuláceas.\nEl arroz salvaje (Zizania), género de plantas herbáceas originarias de Eurasia y Norteamérica, de la familia de las poáceas."
   },
   {
     "id": 30006,
@@ -93,7 +104,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "La semilla más pequeña del mundo, ideal para la resistencia física y la circulación.",
     "tips": "Es el grano base para hacer el pan fermentado tradicional Injera.",
     "nutrients": "Hierro vegetal, Calcio, Fósforo",
-    "pairing": "Guisos de lentejas y panes planos fermentados"
+    "pairing": "Guisos de lentejas y panes planos fermentados",
+    "wikiSummary": "Antonio de Teffé, más conocido como Anthony Steffen, (Roma, 21 de julio de 1930 – Río de Janeiro, 4 de junio de 2004) fue un actor italo-brasileño que protagonizó diversos spaghetti westerns, lo cual le hizo gozar de gran popularidad en la Europa de finales de los años 60.\nAntonio Luiz de Teffé von Hoonholtz, nacido en la embajada brasileña en Roma, en el Palacio Pamphilj, tenía sangre noble de un descendiente largo del conde (von Hoonholtz) originario de Prusia; su bisabuelo fue el gran barón de Tefé. Steffen nació primero de los hijos de Manoel de Teffe “von Hoonholtz (seguido de Federico de Teffe” y Melissa de Teffe “), quien fue campeón de carreras de Fórmula 1 y luego embajador brasileño. La tía abuela de Steffen fue Nair de Tefé von Hoonholtz, la primera mujer caricaturista en Brasil y la esposa del presidente brasileño Hermes Fonseca. Cuando todavía era un adolescente, Steffen, entonces conocido como Antonio, luchó junto a los partidarios italianos contra los nazis en la Segunda Guerra Mundial. Más tarde, y bajo el nombre de Antonio de Teffé, trabajó detrás de escena en varias producciones italianas a principios de la década de 1950 y luego apareció en varias películas, pero nunca se dio cuenta del estrellato. En 1962 tuvo un pequeño papel en Sodoma y Gomorra. Una aparición temprana de él en 1955 fue Gli Sbandati. De 1965 a 1975, el recientemente nombrado Anthony Steffen alcanzó una fama considerable en Europa y obtuvo el estatus de culto, protagonizado por 27 Spaghetti Westerns. Considerado un “italiano Clint Eastwood”, a veces fue criticado erróneamente por ser un actor rígido o de madera. Varias de sus películas fueron grandes éxitos de taquilla en Europa. Django the Bastard (también conocido como Stranger’s Gundown, 1969), una película producida y escrita por Steffen, se considera una inspiración para High Plains Drifter de Clint Eastwood. En varias de sus películas, Steffen jugó con otras estrellas occidentales de Spaghetti como Gianni Garko, Peter Lee Lawrence y William Berger. Además del género Western Spaghetti, Steffen también apareció en varias películas de Giallo, incluida The Night Evelyn Came Out of the Grave (1971). Sus roles y estado disminuyeron cuando el género Spaghetti Western cayó en mal estado. Mientras hacía una considerable fortuna con su carrera como actor, Steffen se embarcó en un estilo de vida jet-set. En su carrera, Steffen ha actuado con Sophia Loren, Gina Lollobrigida, Claudia Cardinale, Elke Sommer, Giuliano Gemma, Franco Nero, Gian Maria Volonté, Esmeralda Barros y muchas otras estrellas del cine estadounidense e italiano. Siempre considerado una gran estrella en Brasil debido a la popularidad de Spaghetti Western en el país sudamericano, Steffen regresó a Río de Janeiro, Brasil en la década de 1980, hasta que murió de cáncer el 4 de junio de 2004, a la edad de 73 años de edad. Ha conservado el estatus de culto con los fanáticos del cine italiano como quizás el protagonista más productivo de Spaghetti Western.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Pistolerosegnato_2.jpg/500px-Pistolerosegnato_2.jpg"
   },
   {
     "id": 30007,
@@ -106,7 +119,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Grano rústico resistente a la sequía, rico en fitoquímicos y fibra dietética.",
     "tips": "Requiere remojo de 8 horas y una cocción prolongada similar a la cebada.",
     "nutrients": "Polifenoles, Fibra insoluble, Cobre",
-    "pairing": "Sopas de hortalizas de invierno y guisados"
+    "pairing": "Sopas de hortalizas de invierno y guisados",
+    "wikiSummary": "El sorgo (Sorghum spp.) o maicillo es un género de poáceas​ oriundas de las regiones tropicales y subtropicales de África oriental. Se cultivan en su zona de origen; en Europa, América y Asia como cereal para consumo humano y animal (en la producción de forrajes), y para la elaboración de bebidas alcohólicas y escobas. Su resistencia a la sequía y al calor lo hace un cultivo útil en regiones semiáridas, y es uno de los cultivos más importantes del mundo. Comprende 366 especies descritas y de éstas, solo 31 aceptadas.​​\nAl tratarse de un alimento carente de gluten, representa una opción nutritiva para las personas celíacas. Posee propiedades antidiarreicas, o astringentes, y homeostáticas.\n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Sorghum_bicolor03.jpg/500px-Sorghum_bicolor03.jpg"
   },
   {
     "id": 30008,
@@ -119,7 +134,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Cereal que nutre el sistema nervioso. Calma la mente y da fuerza física estable.",
     "tips": "Déjala remojar con unas gotas de limón para neutralizar los fitatos.",
     "nutrients": "Betaglucanos, Vitamina B1, Zinc",
-    "pairing": "Leche de avena casera y galletas horneadas"
+    "pairing": "Leche de avena casera y galletas horneadas",
+    "wikiSummary": "Los copos de avena, avena en hojuelas, avena arrollada, avena aplanada o avena machacada se concibieron inicialmente como cereales de desayuno. Sí contiene gluten, y hoy en día son la forma más habitual en que el ser humano consume la avena, cuyo grano ha sido descascarillado, tostado ligeramente, vaporizado y prensado (aplanado).\nEs una excelente fuente de fibra dietética, tanto soluble como insoluble (particularmente esta última en el salvado).\n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Rolled_oats.jpg/500px-Rolled_oats.jpg"
   },
   {
     "id": 30009,
@@ -132,7 +149,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "description": "Variedad antigua de trigo con gluten suave de alta tolerancia intestinal.",
     "tips": "Ideal para preparar masas rústicas de panadería consciente.",
     "nutrients": "Niacina, Fibra, Hierro",
-    "pairing": "Masa de pizza rústica y panes de masa madre"
+    "pairing": "Masa de pizza rústica y panes de masa madre",
+    "wikiSummary": "Polvillo es una empresa panadera con sede en Sevilla, España. La primera panadería de Polvillo fue abierta en el Barrio León de Triana, en 1941, a cargo de Don Fernando Polvillo García.​ No fue hasta 1987 que se creó el grupo empresarial Polvillo S.L. y actualmente, la tercera generación de la Familia Polvillo dirige la empresa, la cual es líder en el sector panadero de Andalucía.​ Entre su gama de panes se encuentran los tradicionales andaluces, como el bollo sevillano o la telera cordobesa, el mollete, la viena, el pan francés, la piña y otros panes candeales.​ También venden otra clase de comestibles, como patatas fritas o refrescos. \nEn 2019, Polvillo vendió una media de 60 toneladas diarias de pan a través de una red de 37 establecimientos propios y alrededor de doscientos comercios asociados, cafeterías, bares, etc. en toda España excepto Canarias.​ El grupo empresarial está formado por Fapanys, la panificadora; Polvillo e Hijos, sociedad patrimonial encargada también de la compra al por mayor de materia prima; y las comercializadoras Copacial, Comercial de Panadería y Pasando el Río.​",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/1/11/Logo_de_Polvillo.png"
   },
   {
     "id": 30010,
@@ -144,7 +163,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 3,
     "description": "Trigo antiguo gigante (Khorasan). De sabor dulce y almendrado, altamente energético.",
     "nutrients": "Lípidos saludables, Selenio, Magnesio",
-    "pairing": "Pastas artesanales con salsa pesto"
+    "pairing": "Pastas artesanales con salsa pesto",
+    "wikiSummary": "El trigo de Jorasán o trigo oriental (Triticum turgidum subesp. turanicum; también, Triticum turanicum), a veces conocido comercialmente como Kamut, es una subespecie tetraploide del trigo originaria de Jorasán, Irán.​ Se le considera un tipo de grano ancestral. Además de Jorasán, también se cultiva en otras partes de Asia Central, incluido Afganistán. Este grano es dos veces el tamaño del trigo moderno y es conocido por su rico sabor a nuez.​\nEn 1988, el agrónomo estadounidense Bob Quinn llevó semillas de trigo Jorasán desde Asia hasta los EE. UU., lo patentó y lo comenzó a vender bajo el nombre comercial de Kamut. La ideación de una leyenda que asociara esta variedad con los antiguos faraones egipcios fue una efectiva estrategia de marketing;​ de hecho, kamut era supuestamente la denominación que recibía en lengua egipcia antigua, según egiptólogos.​ Esta «nueva» harina se extendió rápidamente entre los panaderos y marcó tendencia también en Europa, sustituyendo otras variedades autóctonas de Triticum turgidum como el trigo candeal en España, en vías de desaparecer. Hoy en día, la denominación «Kamut» también es usada de forma genérica para las harinas a base de T. turgidum y cualquiera de sus subespecies.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Triticum_turgidum_subsp._turanicum_MHNT.BOT.2015.2.35.jpg/500px-Triticum_turgidum_subsp._turanicum_MHNT.BOT.2015.2.35.jpg"
   },
   {
     "id": 30011,
@@ -156,7 +177,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 1,
     "description": "Grano denso y pesado, aporta gran calor interno, ideal para climas fríos.",
     "nutrients": "Fibra dietética densa, Fitoestrógenos, Zinc",
-    "pairing": "Panes densos de centeno con aguacate y germinados"
+    "pairing": "Panes densos de centeno con aguacate y germinados",
+    "wikiSummary": "El pan rústico es aquel pan que sigue procedimientos artesanales tanto en el cultivo de trigo como en la preparación del pan, por lo que se considera que tiene unas propiedades organolépticas excepcionales. Los panes rústicos suelen ser hogazas redondas de gran tamaño, corteza gruesa y tostada, y miga esponjosa y alveolada.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Pan_rustico_002.jpg/500px-Pan_rustico_002.jpg"
   },
   {
     "id": 30012,
@@ -168,7 +191,8 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 2,
     "description": "Grano ultraligero y libre de gluten de cocción rápida, ideal para estómagos sensibles.",
     "nutrients": "Metionina, Cistina, Aminoácidos azufrados",
-    "pairing": "Tabulé fresco con menta y pepino"
+    "pairing": "Tabulé fresco con menta y pepino",
+    "wikiSummary": "El fonio o fon es una unidad de medida logarítmica y adimensional (similar al decibelio) que se usa para indicar la sonoridad con que se percibe un sonido dado.\nUna onda sinusoidal que tiene una frecuencia de 1kHz y una amplitud igual a \n  \n    \n      \n        \n          p\n          \n            0\n          \n        \n        =\n        20\n        ⋅\n        \n          10\n          \n            −\n            6\n          \n        \n        \n      \n    \n    {\\displaystyle p_{0}=20\\cdot 10^{-6}\\,}\n  \n Pa se usa para definir la sonoridad de referencia, por lo que tiene una sonoridad igual a 0 fonios.\nSi tenemos en cuenta que el umbral de audición del oído humano se encuentra a 20 micropascales, y que coincide con el nivel de referencia de los decibelios de nivel de presión sonora; podemos concluir diciendo que el nivel presión sonora será siempre igual al nivel de sonoridad en fons cuando se trate de una frecuencia senoidal de 1kHz."
   },
   {
     "id": 30013,
@@ -180,7 +204,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 3,
     "description": "Grano refrescante ideal para limpiar el hígado y calmar irritaciones gástricas.",
     "nutrients": "Betaglucanos, Selenio, Cobre",
-    "pairing": "Caldo de vegetales de raíz e infusión de cebada"
+    "pairing": "Caldo de vegetales de raíz e infusión de cebada",
+    "wikiSummary": "La cebada perlada es un alimento que se compone de granos pulidos y pelados de cebada de forma medio, o bien completamente, redondeada.\nAl retirarse la cáscara, se eliminan también las capas externas del grano, por lo que no se considera un \"cereal integral\". Aunque tiene menos fibra, sigue siendo nutritiva.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Hordeum_vulgare_Gort.jpg/500px-Hordeum_vulgare_Gort.jpg"
   },
   {
     "id": 30014,
@@ -192,7 +218,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 1,
     "description": "El arroz de grano largo más aromático, fácil de digerir y equilibrado (Sattva).",
     "nutrients": "Fibra, Vitaminas B, Carbohidratos complejos",
-    "pairing": "Curry de garbanzos con leche de coco"
+    "pairing": "Curry de garbanzos con leche de coco",
+    "wikiSummary": "El basmati (Hindi: बासमती, bāsmatī, Urdu: باسمتى) es una variedad de arroz caracterizada por tener un grano largo, y es famoso por sus delicadas fragancias y su exquisito sabor. Su nombre en hindi significa \"reina de las fragancias\".\n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Basmati_Rice_Kolkata_2011-02-11_1054.JPG/500px-Basmati_Rice_Kolkata_2011-02-11_1054.JPG"
   },
   {
     "id": 30015,
@@ -204,7 +232,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 2,
     "description": "Grano crujiente de color rojo natural rico en nutrientes y antioxidantes.",
     "nutrients": "Monacolina K natural, Hierro, Magnesio",
-    "pairing": "Ensaladas crujientes de hinojo y naranja"
+    "pairing": "Ensaladas crujientes de hinojo y naranja",
+    "wikiSummary": "Ginebra es un municipio perteneciente al departamento del Valle del Cauca, en la República de Colombia. Se ubica en el centro del departamento, a 40 kilómetros al noreste de Santiago de Cali, la capital. Es conocida a nivel internacional por su sancocho de gallina, por la producción de uva isabella y por el festival Mono Núñez. Es la ciudad natal del portero Miguel Calero.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/7/71/Asi_esta_la_iglesia.jpg"
   },
   {
     "id": 30016,
@@ -216,7 +246,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 3,
     "description": "Variedad de mijo de color rojizo rico en antioxidantes y excelente para la piel.",
     "nutrients": "Antioxidantes, Silicio, Fósforo",
-    "pairing": "Croquetas horneadas con zanahoria y calabacín"
+    "pairing": "Croquetas horneadas con zanahoria y calabacín",
+    "wikiSummary": "Mijo común (Panicum miliaceum) es una especie de planta herbácea perteneciente a la familia de las poáceas.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Panicum_miliaceum0.jpg/500px-Panicum_miliaceum0.jpg"
   },
   {
     "id": 30017,
@@ -228,7 +260,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 1,
     "description": "Variedad de teff más suave de sabor dulce y delicado, excelente para repostería.",
     "nutrients": "Calcio, Hierro, Fibra",
-    "pairing": "Panqueques sin gluten y muffins conscientes"
+    "pairing": "Panqueques sin gluten y muffins conscientes",
+    "wikiSummary": "La injera o inyera (pronúnciese «ínyera» o «ínyara», IPA: [ɨndʒəra]) es un pan plano muy fino, parecido a una crêpe, que forma la base de cualquier comida etíope y de Eritrea.​​​  Está hecha con harina fermentada de tef, un cereal local, que luego se cuece en una plancha de cerámica redonda que se mantiene caliente sobre la leña del fuego. Acompaña guisos varios como el doro wat (pollo con salsa), el misr wat (puré espeso de lentejas) o el shiro wat (puré espeso de garbanzos similar al hummus).​​​",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Injera_from_ivory_teff.jpg/500px-Injera_from_ivory_teff.jpg"
   },
   {
     "id": 30018,
@@ -240,7 +274,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 2,
     "description": "Grano molido con todo su salvado y germen intacto, ideal para nutrición muscular.",
     "nutrients": "Proteínas, Fibras insolubles, Vitaminas B",
-    "pairing": "Bollos rústicos con pasas y nueces"
+    "pairing": "Bollos rústicos con pasas y nueces",
+    "wikiSummary": "El término trigo (Triticum spp.)​ designa al conjunto de cereales, tanto cultivados como silvestres, que pertenecen al género Triticum; se trata de plantas anuales de la familia de las gramíneas,​ ampliamente cultivadas en todo el mundo.​ La palabra designa tanto a la planta como a sus semillas comestibles, tal como ocurre con los nombres de otros cereales.​\nEl trigo es uno de los tres granos más producidos a nivel mundial, junto al maíz y el arroz.​ En 2013, la producción mundial fue de 713 millones de toneladas, es decir, ocupó el tercer lugar, después del maíz (1016 millones) y el arroz (745 millones)​ y el más ampliamente consumido por la población occidental desde la antigüedad. El grano del trigo, mediante su moltura o molienda, es utilizado para hacer harina, harina integral, sémola, y multitud de productos alimenticios derivados como el pan.​ Más del 90 % del trigo producido es el denominado trigo harinero, perteneciente a la especie Triticum aestivum.\nLa palabra «trigo» proviene del vocablo latino triticum, que significa «triturado», de la raíz latina terere, «frotar», «desgastar», «triturar». Triticum significa, por lo tanto, «lo que se tritura»; tal como el mijo deriva del latín milium, que significa «molido, molturado», o sea, «el grano que es necesario moler para poder ser consumido». El trigo (triticum) es, por lo tanto, una de las palabras más ancestrales para denominar a los cereales (las que se referían a su trituración o molturación).\n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Vehn%C3%A4pelto_6.jpg/500px-Vehn%C3%A4pelto_6.jpg"
   },
   {
     "id": 30019,
@@ -252,7 +288,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 3,
     "description": "Cebada ancestral de color negro profundo con sabor ahumado y rico en fibra digestiva.",
     "nutrients": "Antocianinas, Cromo, Selenio",
-    "pairing": "Guisos andinos con papas y ajíes"
+    "pairing": "Guisos andinos con papas y ajíes",
+    "wikiSummary": "La cebada (Hordeum vulgare), es una planta monocotiledónea anual perteneciente a la familia de las poáceas (gramíneas); a su vez, es un cereal de gran importancia tanto para animales como para humanos y es el quinto cereal más cultivado en el mundo (53 millones de hectáreas o 132 millones de acres).\n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Escourgeon-Hordeum_vulgare_subsp._vulgare.jpg/500px-Escourgeon-Hordeum_vulgare_subsp._vulgare.jpg"
   },
   {
     "id": 30020,
@@ -2352,7 +2390,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 1,
     "description": "Baya cítrica que produce un hormigueo adormecedor en el paladar.",
     "nutrients": "Sanshool, Antioxidantes, Manganeso",
-    "pairing": "Salteados de tofu y platos de berenjena"
+    "pairing": "Salteados de tofu y platos de berenjena",
+    "wikiSummary": "Zanthoxylum piperitum, de nombre común pimienta de Sichuan, pimienta japonesa, pimienta coreana sanshō, cayatuna o chopi,​ es una especie de planta de la familia Rutaceae. Su área de distribución natural abarca desde Hokkaidō hasta Kyūshū en Japón,​ parte del sur de la península de Corea​ y la China continental.​\nSu nombre común corresponde al polvo resultante de la molienda de los frutos, muy consumido en Asia como especia. A pesar de su nombre, no tiene relación con la pimienta negra y es común en Sichuan (China), como también en la región del Tíbet, Bután y la cocina japonesa. En chino es conocida como 花椒, pinyin: huājiāo, literalmente \"pimienta flor\"; también se llama shānjiāo, \"pimienta de montaña\".",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Zanthoxylum_piperitum.jpg/500px-Zanthoxylum_piperitum.jpg"
   },
   {
     "id": 30195,
@@ -2376,7 +2416,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 3,
     "description": "Semillas picantes que liberan su sabor al freírse en aceite templado.",
     "nutrients": "Glucosinolatos, Selenio, Omega 3",
-    "pairing": "Dhal de lentejas rojas y curries"
+    "pairing": "Dhal de lentejas rojas y curries",
+    "wikiSummary": "La mostaza (también llamada «jenable» y «jenabe») hace referencia generalmente al condimento envasado con apariencia externa amarillenta pastosa y de sabor agridulce que se elabora de las semillas de varias plantas del género Sinapis, familia de las crucíferas, que también incluye las coles y los nabos.\nAsimismo, hace referencia también a la pequeña semilla de mostaza, usada como especia y que se emplea frecuentemente en algunas gastronomías, como por ejemplo: la alemana, la india o la francesa, entre otras.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Senf-3.jpg/500px-Senf-3.jpg"
   },
   {
     "id": 30197,
@@ -2400,7 +2442,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 2,
     "description": "Pimiento molido secado con humo de encina, aporta sabor ahumado.",
     "nutrients": "Betacarotenos, Sodio, Antioxidantes",
-    "pairing": "Guisos de patata y seitán ahumado casero"
+    "pairing": "Guisos de patata y seitán ahumado casero",
+    "wikiSummary": "El pimentón, ají de color o páprika es un condimento en polvo de color rojo-anaranjado y sabor característico obtenido a partir del secado y molido de determinadas variedades de pimientos rojos especialmente la ñora y la páprika. Es ingrediente fundamental de platos típicos españoles, como las patatas a la riojana, el pulpo a la gallega, las patatas bravas, la sobrasada, el chorizo y numerosos platos de la gastronomía extremeña o de la gastronomía de la provincia de León. Su uso como parte de uno de sus Mojos es fundamental en la nutrición y gastronomía de los canarios. También otras gastronomías como la húngara lo emplean abundantemente. Actualmente India y China son los primeros exportadores mundiales de este producto.​ Gracias al mejoramiento genético se han conseguido variedades de color anaranjado, amarillo y blancuzco.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Piment%C3%B3n_Tap_de_Cort%C3%AD.jpg"
   },
   {
     "id": 30199,
@@ -2424,7 +2468,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 1,
     "description": "Ajo deshidratado concentrado que aporta un sabor umami directo.",
     "nutrients": "Alicina, Selenio, Manganeso",
-    "pairing": "Salsas alioli veganas y sazonadores de frutos secos"
+    "pairing": "Salsas alioli veganas y sazonadores de frutos secos",
+    "wikiSummary": "La sal de ajo es una sal preparada usada como condimento. Consiste en una mezcla de ajo seco molido y sal de mesa con un humectante (por ejemplo, silicato dicálcico). En su forma más básica se prepara combinando 3 partes de sal y una parte de ajo en polvo.\nSe usa como sustituto del ajo fresco, por ejemplo en hamburguesas o chile con carne.\nNo debería confundirse con el ajo picado, granulado o en polvo, que consiste solo en ajo seco molido y también se vende como especia, pero que no lleva sal.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/GarlicSalt.jpg/500px-GarlicSalt.jpg"
   },
   {
     "id": 30201,
@@ -2448,7 +2494,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 3,
     "description": "Semilla aromática de sabor cálido y dulce, muy concentrada.",
     "nutrients": "Miristicina, Calcio, Magnesio",
-    "pairing": "Salsas bechamel de anacardos para lasañas"
+    "pairing": "Salsas bechamel de anacardos para lasañas",
+    "wikiSummary": "El moscadero de África (Monodora myristica) es un árbol tropical de la familia Annonaceae. Es nativa de las selvas tropicales de África Occidental y Central, entre otros.​ Antiguamente sus semillas se vendían como sustituto económico de la nuez moscada. Por ello, se lo conoce también como faux muscadier (en francés, 'falsa nuez moscada') o muscade calebasse ('nuez moscada de calabaza'; en inglés, calabash nutmeg). Sin embargo, su uso como sustituto de la nuez moscada es cada vez es menos común fuera de su región de producción.​ Otros nombres locales son ehuru, ariwo, awerewa,​ ehiri, airama y lubushi.​",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Curtis%27s_Botanical_Magazine%2C_Plate_3059_%28Volume_58%2C_1831%29.png/500px-Curtis%27s_Botanical_Magazine%2C_Plate_3059_%28Volume_58%2C_1831%29.png"
   },
   {
     "id": 30203,
@@ -2472,7 +2520,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 2,
     "description": "Pimiento dulce molido rojo vibrante rico en betacarotenos.",
     "nutrients": "Vitamina A, Hierro, Potasio",
-    "pairing": "Guisos de alubias y salsas de tomate"
+    "pairing": "Guisos de alubias y salsas de tomate",
+    "wikiSummary": "Capsicum annuum, llamado comúnmente pimiento morrón, pimiento dulce, chile morrón, ají morrón, ají dulce, locote o en algunos países pimentón, entre una multitud de localismos, es la especie más conocida, extendida y cultivada del género Capsicum, de la familia de las solanáceas. Todas las innumerables formas, tamaños, colores y sabores de sus frutos, descritos y nombrados en la cultura popular, corresponden en realidad a esta misma especie. Los mismos nombres se utilizan también para el fruto de esta especie vegetal.\nTambién se llaman así a la planta y los frutos de otras especies y variedades de la misma familia, especialmente Capsicum frutescens variedad Grossum, un arbusto cuyo fruto tiene en común con el de Capsicum annuum la ausencia del sabor picante característico del género.\n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Pimiento_morr%C3%B3n_%28Capsicum_annuum%29.jpg/500px-Pimiento_morr%C3%B3n_%28Capsicum_annuum%29.jpg"
   },
   {
     "id": 30205,
@@ -2496,7 +2546,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 1,
     "description": "Semillas de fuerte aroma utilizadas para facilitar digestiones.",
     "nutrients": "Carvona, Calcio, Hierro",
-    "pairing": "Panes de centeno y cocción de coles"
+    "pairing": "Panes de centeno y cocción de coles",
+    "wikiSummary": "El pastel de semilla de alcaravea es una torta muy antigua y tradicional en la gastronomía del Reino Unido, que se prepara condimentando la mezcla con semillas de alcaravea.​ La alcaravea se ha usado desde hace mucho tiempo en la cocina británica, principalmente para condimentar panes, pasteles y frutas, y en cierta época los pasteles de semillas de alcaravea se preparaban para marcar el final de la siembra del trigo en primavera. Estos pasteles en particular más tarde evolucionaron en la típica torta de la hora del té condimentada de una manera distintiva, se acostumbra servirlo caliente y acompañado con mantequilla.​ Fue muy popular durante la época Victoriana usando una receta descrita por Mrs Beeton.​",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Caraway_seed_cake.jpg/500px-Caraway_seed_cake.jpg"
   },
   {
     "id": 30207,
@@ -2520,7 +2572,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 3,
     "description": "Vaina de orquídea aromática de sabor dulce y balsámico inigualable.",
     "nutrients": "Vainillina, Calcio, Potasio",
-    "pairing": "Postres de chocolate crudo y leches vegetales"
+    "pairing": "Postres de chocolate crudo y leches vegetales",
+    "wikiSummary": "Vanilla planifolia es una especie del género de orquídeas Vanilla, de hábito trepador y crecimiento rastrero, originaria de Mesoamérica. Se cultiva de México a Paraguay y en Madagascar.​​ Del fruto de esta planta se extrae la Vainilla.\n\n",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Vanilla_planifolia_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-278.jpg/500px-Vanilla_planifolia_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-278.jpg"
   },
   {
     "id": 30209,
@@ -2544,7 +2598,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 2,
     "description": "Hongo que conecta con la sabiduría de la tierra, gran inmunomodulador.",
     "nutrients": "Lentinan, Cobre, Vitaminas B",
-    "pairing": "Salteado en wok con jengibre y ajo"
+    "pairing": "Salteado en wok con jengibre y ajo",
+    "wikiSummary": "La seta china o shiitake (Lentinula edodes) es una seta comestible de color marrón y aroma intenso originaria de Asia Oriental. Suele encontrarse más a menudo deshidratada que fresca y se añade a sopas, revueltos y otros platos para hacerlos más sabrosos.",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Lentinula_edodes.jpg/500px-Lentinula_edodes.jpg"
   },
   {
     "id": 30211,
@@ -2568,7 +2624,9 @@ export const ENCYCLOPEDIA_DATABASE = [
     "level": 1,
     "description": "El hongo de la inmortalidad, adaptógeno que calma el sistema nervioso.",
     "nutrients": "Triterpenos, Betaglucanos, Germanio orgánico",
-    "pairing": "Infusión tibia con cacao crudo por la noche"
+    "pairing": "Infusión tibia con cacao crudo por la noche",
+    "wikiSummary": "Ganoderma lucidum es un hongo basidiomiceto de la familia Ganodermataceae, llamado en español pipa, por la forma que suele presentar su carpóforo o seta.​ Se encuentra distribuido por las zonas de clima templado de todo el mundo.\nHa sido utilizado como medicamento en varias tradiciones médicas asiáticas, en algunos casos incluso desde hace 2000 años, por lo que se le puede atribuir ser el hongo con mayor historia de uso medicinal.[cita requerida] Actualmente, se cultiva para su uso comercial, y debido a la venta de sus preparaciones se ha popularizado su nombre en japonés, reishi.​",
+    "wikiImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Ganoderma_lucidum_01.jpg/500px-Ganoderma_lucidum_01.jpg"
   },
   {
     "id": 30213,

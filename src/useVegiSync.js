@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabaseClient'
 
 export function useVegiSync(userId, onRealtimeUpdate) {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  
+  const onRealtimeUpdateRef = useRef(onRealtimeUpdate)
+  useEffect(() => {
+    onRealtimeUpdateRef.current = onRealtimeUpdate
+  })
 
   useEffect(() => {
     if (!userId || !supabase) {
@@ -45,8 +50,8 @@ export function useVegiSync(userId, onRealtimeUpdate) {
         (payload) => {
           console.log('¡Actualización mística recibida de Supabase Realtime!', payload.new)
           setProfile(payload.new)
-          if (onRealtimeUpdate) {
-            onRealtimeUpdate(payload.new)
+          if (onRealtimeUpdateRef.current) {
+            onRealtimeUpdateRef.current(payload.new)
           }
           if ('vibrate' in navigator) {
             navigator.vibrate([100, 50, 100])
@@ -58,7 +63,7 @@ export function useVegiSync(userId, onRealtimeUpdate) {
     return () => {
       supabase.removeChannel(profileSubscription)
     }
-  }, [userId, onRealtimeUpdate])
+  }, [userId])
 
   return { profile, loading, setProfile }
 }
