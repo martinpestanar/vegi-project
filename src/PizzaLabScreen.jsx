@@ -3,96 +3,19 @@ import {
   Calculator, ClipboardList, Timer, BookOpen, Sparkles, Plus, Star, 
   Trash, Play, Pause, RotateCcw, FileText, ChevronLeft, ChefHat, 
   Scale, Flame, Hourglass, Award, AlertCircle, CheckCircle2, ChevronRight,
-  BookOpenCheck, Info, HelpCircle
+  BookOpenCheck, Info, HelpCircle, Save, Database, Wifi, WifiOff
 } from 'lucide-react'
+import { supabase } from './supabaseClient'
 
-// CONSTANTES Y PRESETS DE MASAS SIN GLUTEN & TRADICIONALES
-const DOUGH_PRESETS = {
-  avena: {
-    name: 'Base de Avena Activa',
-    shortName: 'Avena',
-    emoji: '🌾',
-    isGlutenFree: true,
-    flours: { base: 'Harina de Avena', starch: 'Almidón de Yuca' },
-    ratioFlours: 70, // 70% Avena, 30% Yuca
-    hydration: 85, // Las harinas sin gluten absorben muchísimo líquido
-    psyllium: 4, // % de Psyllium para elasticidad
-    yeast: 2.5,
-    salt: 2,
-    oil: 3,
-    description: 'Masa suave, de sabor sutil y dulce, muy digestiva y rica en fibra. Apta para un leudado medio.'
-  },
-  quinua: {
-    name: 'Base Ancestral de Quinua',
-    shortName: 'Quinua',
-    emoji: '✨',
-    isGlutenFree: true,
-    flours: { base: 'Harina de Quinua (Lavada)', starch: 'Fécula de Patata' },
-    ratioFlours: 65, // 65% Quinua, 35% Fécula
-    hydration: 90,
-    psyllium: 5,
-    yeast: 2.5,
-    salt: 2,
-    oil: 4,
-    description: 'Masa proteica de sabor terroso y de nuez. Requiere buena hidratación y un reposo óptimo para suavizar la saponina.'
-  },
-  canihua: {
-    name: 'Base Pránica de Cañihua',
-    shortName: 'Cañihua',
-    emoji: '🔴',
-    isGlutenFree: true,
-    flours: { base: 'Harina de Cañihua', starch: 'Almidón de Yuca' },
-    ratioFlours: 60, // 60% Cañihua, 40% Yuca
-    hydration: 95,
-    psyllium: 5,
-    yeast: 2.5,
-    salt: 2,
-    oil: 4,
-    description: 'Masa rústica súper-nutritiva de color oscuro y sabor profundo. Alta presencia de antioxidantes. Excelente crocancia al pre-horneo.'
-  },
-  multigrano: {
-    name: 'Blend Multigrano Culinario (Chef Recomendación)',
-    shortName: 'Multigrano',
-    emoji: '🌾🔴',
-    isGlutenFree: true,
-    flours: { base: 'Mezcla Multigrano', starch: 'Almidón de Yuca' },
-    ratioFlours: 70, // 70% granos, 30% yuca
-    hydration: 90,
-    psyllium: 4.5,
-    yeast: 2.5,
-    salt: 2,
-    oil: 3.5,
-    description: 'La Santísima Trinidad recomendada por el Chef: 50% Avena (cohesión y suavidad), 30% Quinua (estructura y proteína) y 20% Cañihua (sabor tostado, color y antioxidantes). El balance perfecto de sabor y estructura.'
-  },
-  custom: {
-    name: 'Blend Personalizado de Granos',
-    shortName: 'Blend Custom',
-    emoji: '🧪',
-    isGlutenFree: true,
-    flours: { base: 'Mezcla Personalizada', starch: 'Almidón de Yuca' },
-    ratioFlours: 70,
-    hydration: 90,
-    psyllium: 4.5,
-    yeast: 2.5,
-    salt: 2,
-    oil: 3.5,
-    description: 'Crea tu propia alquimia. Controla las proporciones exactas de Avena, Quinua y Cañihua en la mezcla base para tus experimentos.'
-  },
-  trigo: {
-    name: 'Masa de Trigo Tradicional',
-    shortName: 'Trigo (Gluten)',
-    emoji: '🍕',
-    isGlutenFree: false,
-    flours: { base: 'Harina de Trigo (Fuerza o 00)', starch: null },
-    ratioFlours: 100,
-    hydration: 65,
-    psyllium: 0,
-    yeast: 1.5,
-    salt: 2.5,
-    oil: 2,
-    description: 'Masa clásica italiana (tipo napolitana). El gluten crea una red elástica que atrapa el gas de fermentación para un borde alveolado.'
-  }
-}
+// Harinas por defecto en caso de fallback offline
+const DEFAULT_FLOURS = [
+  { id: '1', name: 'Harina de Avena Activa', short_name: 'Avena', emoji: '🌾', is_gluten_free: true, absorption_rate: 85, sattva_energy: 'Sattva', description: 'Masa suave, de sabor sutil y dulce, muy digestiva y rica en fibra. Apta para un leudado medio.' },
+  { id: '2', name: 'Harina de Quinua (Lavada)', short_name: 'Quinua', emoji: '✨', is_gluten_free: true, absorption_rate: 90, sattva_energy: 'Sattva', description: 'Masa proteica de sabor terroso y de nuez. Requiere buena hidratación y un reposo óptimo para suavizar la saponina.' },
+  { id: '3', name: 'Harina de Cañihua', short_name: 'Cañihua', emoji: '🔴', is_gluten_free: true, absorption_rate: 95, sattva_energy: 'Sattva', description: 'Masa rústica súper-nutritiva de color oscuro y sabor profundo. Alta presencia de antioxidantes. Excelente crocancia al pre-horneo.' },
+  { id: '4', name: 'Harina de Trigo (Fuerza o 00)', short_name: 'Trigo (Gluten)', emoji: '🍕', is_gluten_free: false, absorption_rate: 65, sattva_energy: 'Rajas', description: 'Masa clásica italiana (tipo napolitana). El gluten crea una red elástica que atrapa el gas de fermentación.' },
+  { id: '5', name: 'Harina de Arroz Integral', short_name: 'Arroz', emoji: '🍚', is_gluten_free: true, absorption_rate: 75, sattva_energy: 'Sattva', description: 'Masa muy neutra y de color claro. Aporta gran ligereza pero requiere ser combinada con otros granos para dar sabor.' },
+  { id: '6', name: 'Harina de Sarraceno (Alforfón)', short_name: 'Sarraceno', emoji: '🛡️', is_gluten_free: true, absorption_rate: 80, sattva_energy: 'Sattva', description: 'Harina muy elástica de sabor rústico intenso y oscuro. Excelente para combinaciones crujientes de pizza rústica.' }
+]
 
 // RECETAS PRE-CARGADAS DE LA IA / TRADICIONALES
 const INITIAL_RECIPES = [
@@ -116,7 +39,7 @@ const INITIAL_RECIPES = [
       'Gelificar: Mezclar el psyllium husk con 220ml del agua templada de la receta. Reposar 10 min hasta obtener una goma densa.',
       'Mezclar Secos: En un bowl, tamizar y juntar la harina de avena, quinua, cañihua, almidón de yuca y sal.',
       'Activar levadura: En 60ml de agua tibia con una pizca de endulzante, activar la levadura por 5 min.',
-      'Unificación: Agregar al bowl de secos el gel de psyllium, la levadura espumosa, el resto del agua y el aceite. Amasar hasta homogeneizar completamente.',
+      'Unificación: Agregar al bowl de secos el gel de psyllium, la levadura activa, el resto del agua y el aceite. Amasar hasta homogeneizar completamente.',
       'Fermentación: Cubrir con paño húmedo y leudar por 90 min en ambiente cálido.',
       'Estirado: Colocar la masa húmeda sobre papel vegetal aceitado. Estirar a mano hasta lograr 5-6mm de espesor.',
       'Pre-horneo: Hornear la masa sola a 250°C por 7-8 minutos hasta que se fije la corteza.',
@@ -148,51 +71,47 @@ const INITIAL_RECIPES = [
       'Montaje: Retirar, colocar salsa de tomate artesanal, queso vegetal (de almendras o anacardos) y albahaca fresca.',
       'Horneado final: Hornear 5-7 minutos más hasta que los bordes estén dorados y crujientes.'
     ]
-  },
-  {
-    id: 'napolitana-trigo',
-    title: 'Clásica Napolitana de Trigo (65% Hidratación)',
-    source: 'Tradición',
-    description: 'Masa tradicional con gluten, fermentada en frío por 24 horas.',
-    ingredients: [
-      '400g Harina de Fuerza (Trigo 00)',
-      '260ml Agua fría',
-      '6g Levadura seca o 2g levadura fresca',
-      '10g Sal fina de mar',
-      '8ml Aceite de oliva'
-    ],
-    steps: [
-      'Disolver la levadura en el agua y agregar el 90% de la harina. Mezclar hasta unir todo.',
-      'Agregar la sal y el resto de la harina. Amasar por 10-15 minutos en superficie limpia hasta que la masa quede lisa, elástica y pase la prueba de la ventana.',
-      'Añadir el aceite de oliva al final del amasado e integrarlo bien.',
-      'Dejar reposar la masa tapada a temperatura ambiente por 2 horas, luego formar bollos.',
-      'Colocar en un recipiente cerrado y llevar a refrigeración de 24 a 48 horas para una maduración lenta.',
-      'Sacar del refrigerador 3 horas antes de estirar para que pierda el frío.',
-      'Estirar con las manos empujando el gas hacia el borde (cornicione). Nunca usar rodillo.',
-      'Colocar salsa de tomate, mozzarella de búfala, aceite y hornear a temperatura máxima por 4-5 minutos.'
-    ]
   }
 ]
 
 export default function PizzaLabScreen({ onClose }) {
   const [activeSubTab, setActiveSubTab] = useState('calculadora')
   
-  // Estados de los Submódulos
-  const [selectedBase, setSelectedBase] = useState('multigrano') // Multigrano por defecto ahora
+  // Conectividad de Supabase
+  const isSupabaseOnline = !!supabase
+
+  // Harinas dinámicas cargadas de Supabase / Fallback
+  const [flours, setFlours] = useState(DEFAULT_FLOURS)
+  const [loadingFlours, setLoadingFlours] = useState(false)
+  const [showAddFlourForm, setShowAddFlourForm] = useState(false)
+  const [newFlour, setNewFlour] = useState({
+    name: '',
+    short_name: '',
+    emoji: '🌾',
+    is_gluten_free: true,
+    absorption_rate: 75,
+    sattva_energy: 'Sattva',
+    description: ''
+  })
+
+  // Blends guardados en Supabase / Fallback
+  const [savedBlends, setSavedBlends] = useState([])
+  const [loadingBlends, setLoadingBlends] = useState(false)
+  const [newBlendName, setNewBlendName] = useState('')
+  const [showSaveBlendModal, setShowSaveBlendModal] = useState(false)
+
+  // Estados de cálculo de panadero
+  const [selectedBaseMode, setSelectedBaseMode] = useState('multigrano') // 'avena' | 'quinua' | 'canihua' | 'trigo' | 'multigrano' | 'custom' | o ID de blend de Supabase
   const [targetWeight, setTargetWeight] = useState(400) // gramos de harina total
   const [customHydration, setCustomHydration] = useState(90)
   const [customPsyllium, setCustomPsyllium] = useState(4.5)
 
-  // Sliders para la mezcla personalizada (Custom Blend)
-  const [blendAvena, setBlendAvena] = useState(50)
-  const [blendQuinua, setBlendQuinua] = useState(30)
-  const [blendCanihua, setBlendCanihua] = useState(20)
-
-  // Calcular porcentajes normalizados del blend
-  const totalBlendPoints = blendAvena + blendQuinua + blendCanihua
-  const pctAvena = totalBlendPoints > 0 ? Math.round((blendAvena / totalBlendPoints) * 100) : 0
-  const pctQuinua = totalBlendPoints > 0 ? Math.round((blendQuinua / totalBlendPoints) * 100) : 0
-  const pctCanihua = totalBlendPoints > 0 ? 100 - pctAvena - pctQuinua : 0
+  // Mezcla de harinas personalizada: mapea flour.id -> peso/puntos del blend
+  const [customBlendRatios, setCustomBlendRatios] = useState({
+    '1': 50, // Avena
+    '2': 30, // Quinua
+    '3': 20  // Cañihua
+  })
 
   // Checklist de Mise en Place
   const [checkedSteps, setCheckedSteps] = useState({})
@@ -200,57 +119,66 @@ export default function PizzaLabScreen({ onClose }) {
   // Temporizadores
   const [timerRunning, setTimerRunning] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0) // segundos
-  const [timerMax, setTimerMax] = useState(5400) // por defecto 1.5 horas
+  const [timerMax, setTimerMax] = useState(5400)
   const [timerType, setTimerType] = useState('leudado')
   const timerIntervalRef = useRef(null)
 
   // Bitácora de Experimentos
-  const [experiments, setExperiments] = useState(() => {
-    try {
-      const saved = localStorage.getItem('vegi-pizza-experiments')
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
+  const [experiments, setExperiments] = useState([])
+  const [loadingExperiments, setLoadingExperiments] = useState(false)
   
   // Formulario de Experimento
   const [newExp, setNewExp] = useState({
+    title: '',
     baseType: 'multigrano',
     hydration: 90,
     fermentationTime: 1.5,
     temperature: 250,
     textureScore: 5,
     flavorScore: 5,
-    notes: '',
-    title: ''
+    notes: ''
   })
 
   // Recetas
-  const [recipes, setRecipes] = useState(() => {
-    try {
-      const saved = localStorage.getItem('vegi-pizza-recipes')
-      return saved ? JSON.parse(saved) : INITIAL_RECIPES
-    } catch {
-      return INITIAL_RECIPES
-    }
-  })
+  const [recipes, setRecipes] = useState(INITIAL_RECIPES)
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [showRecipeForm, setShowRecipeForm] = useState(false)
   const [importText, setImportText] = useState('')
   const [newRecipeTitle, setNewRecipeTitle] = useState('')
 
-  // Sincronizar bases en la calculadora
+  // 1. CARGAR DATOS DE SUPABASE AL INICIAR
   useEffect(() => {
-    const preset = DOUGH_PRESETS[selectedBase]
-    setCustomHydration(preset.hydration)
-    setCustomPsyllium(preset.psyllium)
-    setNewExp(prev => ({
-      ...prev,
-      baseType: selectedBase,
-      hydration: preset.hydration
-    }))
-  }, [selectedBase])
+    fetchFlours()
+    fetchBlends()
+    fetchExperiments()
+  }, [])
+
+  // 2. CORREGIR VALORES AL CAMBIAR BASE
+  useEffect(() => {
+    // Si es un ID de blend de Supabase guardado
+    const savedBlend = savedBlends.find(b => b.id === selectedBaseMode)
+    if (savedBlend) {
+      setCustomHydration(savedBlend.hydration)
+      setCustomPsyllium(savedBlend.psyllium)
+      setCustomBlendRatios(savedBlend.flours)
+      return
+    }
+
+    // Presets fijos
+    if (selectedBaseMode === 'avena') {
+      setCustomHydration(85); setCustomPsyllium(4);
+    } else if (selectedBaseMode === 'quinua') {
+      setCustomHydration(90); setCustomPsyllium(5);
+    } else if (selectedBaseMode === 'canihua') {
+      setCustomHydration(95); setCustomPsyllium(5);
+    } else if (selectedBaseMode === 'trigo') {
+      setCustomHydration(65); setCustomPsyllium(0);
+    } else if (selectedBaseMode === 'multigrano') {
+      setCustomHydration(90); setCustomPsyllium(4.5);
+    } else if (selectedBaseMode === 'custom') {
+      setCustomHydration(90); setCustomPsyllium(4.5);
+    }
+  }, [selectedBaseMode, savedBlends])
 
   // Lógica del Temporizador
   useEffect(() => {
@@ -275,126 +203,279 @@ export default function PizzaLabScreen({ onClose }) {
     return () => clearInterval(timerIntervalRef.current)
   }, [timerRunning, timerType])
 
-  // Guardar datos en localStorage
-  useEffect(() => {
-    localStorage.setItem('vegi-pizza-experiments', JSON.stringify(experiments))
-  }, [experiments])
+  // --- MÉTODOS DE CONSULTA Y ESCRITURA SUPABASE ---
 
-  useEffect(() => {
-    localStorage.setItem('vegi-pizza-recipes', JSON.stringify(recipes))
-  }, [recipes])
-
-  // Cálculos de panadero dinámicos
-  const preset = DOUGH_PRESETS[selectedBase]
-  const flourBaseGrams = Math.round((targetWeight * preset.ratioFlours) / 100)
-  const flourStarchGrams = preset.flours.starch 
-    ? Math.round((targetWeight * (100 - preset.ratioFlours)) / 100)
-    : 0
-  
-  // Calcular harinas rústicas distribuidas en caso de blends
-  let avenaGrams = 0
-  let quinuaGrams = 0
-  let canihuaGrams = 0
-
-  if (selectedBase === 'multigrano') {
-    // 50% Avena, 30% Quinua, 20% Cañihua
-    avenaGrams = Math.round((flourBaseGrams * 50) / 100)
-    quinuaGrams = Math.round((flourBaseGrams * 30) / 100)
-    canihuaGrams = Math.round((flourBaseGrams * 20) / 100)
-  } else if (selectedBase === 'custom') {
-    avenaGrams = Math.round((flourBaseGrams * pctAvena) / 100)
-    quinuaGrams = Math.round((flourBaseGrams * pctQuinua) / 100)
-    canihuaGrams = Math.round((flourBaseGrams * pctCanihua) / 100)
-  } else if (selectedBase === 'avena') {
-    avenaGrams = flourBaseGrams
-  } else if (selectedBase === 'quinua') {
-    quinuaGrams = flourBaseGrams
-  } else if (selectedBase === 'canihua') {
-    canihuaGrams = flourBaseGrams
+  const fetchFlours = async () => {
+    if (!supabase) return
+    try {
+      setLoadingFlours(true)
+      const { data, error } = await supabase
+        .from('pizza_flours')
+        .select('*')
+        .order('name', { ascending: true })
+      if (!error && data && data.length > 0) {
+        setFlours(data)
+      }
+    } catch (e) {
+      console.warn("Fallo al conectar con tabla pizza_flours:", e.message)
+    } finally {
+      setLoadingFlours(false)
+    }
   }
 
-  const waterGrams = Math.round((targetWeight * customHydration) / 100)
-  const psylliumGrams = preset.isGlutenFree 
-    ? Math.round((targetWeight * customPsyllium) / 100)
-    : 0
-  const yeastGrams = Math.round((targetWeight * preset.yeast) / 100)
-  const saltGrams = Math.round((targetWeight * preset.salt) / 100)
-  const oilGrams = Math.round((targetWeight * preset.oil) / 100)
-  const totalWeightGrams = targetWeight + waterGrams + psylliumGrams + yeastGrams + saltGrams + oilGrams
-
-  // Formatear tiempo mm:ss o hh:mm:ss
-  const formatTime = (secs) => {
-    const h = Math.floor(secs / 3600)
-    const m = Math.floor((secs % 3600) / 60)
-    const s = secs % 60
-    return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+  const fetchBlends = async () => {
+    if (!supabase) return
+    try {
+      setLoadingBlends(true)
+      const { data, error } = await supabase
+        .from('pizza_blends')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (!error && data) {
+        setSavedBlends(data)
+      }
+    } catch (e) {
+      console.warn("Fallo al conectar con tabla pizza_blends:", e.message)
+    } finally {
+      setLoadingBlends(false)
+    }
   }
 
-  // Guardar Experimento
-  const handleSaveExperiment = (e) => {
+  const fetchExperiments = async () => {
+    if (!supabase) {
+      // Localstorage fallback
+      try {
+        const saved = localStorage.getItem('vegi-pizza-experiments')
+        if (saved) setExperiments(JSON.parse(saved))
+      } catch {}
+      return
+    }
+    try {
+      setLoadingExperiments(true)
+      const { data, error } = await supabase
+        .from('pizza_experiments')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (!error && data) {
+        setExperiments(data)
+      }
+    } catch (e) {
+      console.warn("Fallo al conectar con tabla pizza_experiments:", e.message)
+    } finally {
+      setLoadingExperiments(false)
+    }
+  }
+
+  const handleCreateFlour = async (e) => {
     e.preventDefault()
-    let descBlend = ''
-    if (newExp.baseType === 'custom') {
-      descBlend = ` (${pctAvena}% Av, ${pctQuinua}% Qn, ${pctCanihua}% Ca)`
+    if (!newFlour.name || !newFlour.short_name) return
+
+    if (supabase) {
+      try {
+        const { error } = await supabase
+          .from('pizza_flours')
+          .insert([newFlour])
+        if (error) throw error
+        alert(`🌾 Nueva harina "${newFlour.name}" guardada en Supabase de forma inteligente.`)
+        setShowAddFlourForm(false)
+        setNewFlour({
+          name: '',
+          short_name: '',
+          emoji: '🌾',
+          is_gluten_free: true,
+          absorption_rate: 75,
+          sattva_energy: 'Sattva',
+          description: ''
+        })
+        fetchFlours()
+      } catch (err) {
+        alert("Error al guardar harina en Supabase: " + err.message)
+      }
+    } else {
+      // Offline fallback
+      const localFlour = { id: Date.now().toString(), ...newFlour }
+      setFlours([...flours, localFlour])
+      alert(`🌾 Harina "${newFlour.name}" guardada en memoria local temporal.`)
+      setShowAddFlourForm(false)
     }
-    const experiment = {
-      id: Date.now().toString(),
-      date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      title: newExp.title.trim() || `Ensayo #${experiments.length + 1} (${DOUGH_PRESETS[newExp.baseType].shortName}${descBlend})`,
-      ...newExp,
-      blendPercentages: newExp.baseType === 'custom' ? { avena: pctAvena, quinua: pctQuinua, canihua: pctCanihua } : null
+  }
+
+  const handleSaveBlend = async () => {
+    if (!newBlendName.trim()) return
+
+    const blendData = {
+      name: newBlendName,
+      description: `Blend personalizado con hidratación al ${customHydration}%`,
+      flours: customBlendRatios,
+      hydration: customHydration,
+      psyllium: customPsyllium
     }
-    setExperiments([experiment, ...experiments])
+
+    if (supabase) {
+      try {
+        const { error } = await supabase
+          .from('pizza_blends')
+          .insert([blendData])
+        if (error) throw error
+        alert(`💾 Blend "${newBlendName}" guardado en la nube de Supabase.`)
+        setShowSaveBlendModal(false)
+        setNewBlendName('')
+        fetchBlends()
+      } catch (err) {
+        alert("Error al guardar blend en Supabase: " + err.message)
+      }
+    } else {
+      // Local fallback
+      const localBlend = { id: Date.now().toString(), ...blendData, created_at: new Date().toISOString() }
+      setSavedBlends([localBlend, ...savedBlends])
+      alert(`💾 Blend "${newBlendName}" guardado en local.`)
+      setShowSaveBlendModal(false)
+      setNewBlendName('')
+    }
+  }
+
+  const handleSaveExperiment = async (e) => {
+    e.preventDefault()
+    
+    // Obtener descripción de harinas usadas
+    let finalBaseType = selectedBaseMode
+    const savedBlend = savedBlends.find(b => b.id === selectedBaseMode)
+    if (savedBlend) {
+      finalBaseType = `Blend: ${savedBlend.name}`
+    } else if (selectedBaseMode === 'custom') {
+      finalBaseType = 'Blend Custom'
+    } else if (DOUGH_PRESETS[selectedBaseMode]) {
+      finalBaseType = DOUGH_PRESETS[selectedBaseMode].name
+    }
+
+    const experimentData = {
+      title: newExp.title.trim() || `Ensayo #${experiments.length + 1} (${finalBaseType})`,
+      base_type: finalBaseType,
+      hydration: customHydration,
+      fermentation_time: newExp.fermentationTime,
+      temperature: newExp.temperature,
+      texture_score: newExp.textureScore,
+      flavor_score: newExp.flavorScore,
+      notes: newExp.notes,
+      blend_percentages: selectedBaseMode === 'custom' || savedBlend ? customBlendRatios : null
+    }
+
+    if (supabase) {
+      try {
+        const { error } = await supabase
+          .from('pizza_experiments')
+          .insert([experimentData])
+        if (error) throw error
+        alert('📝 Experimento guardado y sincronizado con Supabase.')
+        fetchExperiments()
+      } catch (err) {
+        alert("Fallo al guardar en Supabase. Se guardará localmente: " + err.message)
+        saveExperimentLocal(experimentData)
+      }
+    } else {
+      saveExperimentLocal(experimentData)
+    }
+
+    // Reset
     setNewExp({
-      baseType: selectedBase,
+      title: '',
+      baseType: selectedBaseMode,
       hydration: customHydration,
       fermentationTime: 1.5,
       temperature: 250,
       textureScore: 5,
       flavorScore: 5,
-      notes: '',
-      title: ''
+      notes: ''
     })
-    alert('📝 Experimento consagrado en tu bitácora.')
   }
 
-  const handleDeleteExperiment = (id) => {
-    if (confirm('¿Seguro que deseas eliminar este registro de experimentación?')) {
-      setExperiments(experiments.filter(e => e.id !== id))
+  const saveExperimentLocal = (exp) => {
+    const localExp = { id: Date.now().toString(), date: new Date().toLocaleDateString(), ...exp }
+    const updated = [localExp, ...experiments]
+    setExperiments(updated)
+    localStorage.setItem('vegi-pizza-experiments', JSON.stringify(updated))
+  }
+
+  const handleDeleteExperiment = async (id) => {
+    if (!confirm('¿Seguro que deseas eliminar este registro de experimentación?')) return
+
+    if (supabase && isNaN(id)) { // los UUID de supabase tienen letras, Date.now() local es numérico
+      try {
+        const { error } = await supabase
+          .from('pizza_experiments')
+          .delete()
+          .eq('id', id)
+        if (error) throw error
+        alert('🗑️ Registro eliminado de Supabase.')
+        fetchExperiments()
+      } catch (err) {
+        alert("Error al eliminar de Supabase: " + err.message)
+      }
+    } else {
+      const updated = experiments.filter(e => e.id !== id)
+      setExperiments(updated)
+      localStorage.setItem('vegi-pizza-experiments', JSON.stringify(updated))
+      alert('🗑️ Registro local eliminado.')
     }
   }
 
-  // Importar Recetas de IA / Web
-  const handleImportRecipe = (e) => {
-    e.preventDefault()
-    if (!newRecipeTitle.trim() || !importText.trim()) return
+  // --- CÁLCULOS DINÁMICOS DE PANADERO CON HARINAS VARIABLES ---
+  const presetSelected = DOUGH_PRESETS[selectedBaseMode] || DOUGH_PRESETS.custom
+  const isGlutenFreeMode = selectedBaseMode !== 'trigo'
 
-    const parsedSteps = importText
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 3)
+  const flourBaseWeight = Math.round((targetWeight * 70) / 100)
+  const starchWeight = isGlutenFreeMode ? Math.round((targetWeight * 30) / 100) : 0
 
-    const newRecipe = {
-      id: Date.now().toString(),
-      title: newRecipeTitle,
-      source: 'Importada / IA',
-      description: 'Receta guardada para recordar durante tus preparaciones.',
-      ingredients: [
-        'Harinas e ingredientes según cálculo de panadero o receta base.'
-      ],
-      steps: parsedSteps
-    }
+  // Resolver los ratios del blend
+  let resolvedFloursGrams = {}
+  
+  if (selectedBaseMode === 'multigrano') {
+    // Avena 50, Quinua 30, Cañihua 20 por defecto
+    resolvedFloursGrams['Avena'] = Math.round((flourBaseWeight * 50) / 100)
+    resolvedFloursGrams['Quinua'] = Math.round((flourBaseWeight * 30) / 100)
+    resolvedFloursGrams['Cañihua'] = Math.round((flourBaseWeight * 20) / 100)
+  } else if (selectedBaseMode === 'avena') {
+    resolvedFloursGrams['Avena'] = flourBaseWeight
+  } else if (selectedBaseMode === 'quinua') {
+    resolvedFloursGrams['Quinua'] = flourBaseWeight
+  } else if (selectedBaseMode === 'canihua') {
+    resolvedFloursGrams['Cañihua'] = flourBaseWeight
+  } else if (selectedBaseMode === 'trigo') {
+    resolvedFloursGrams['Trigo'] = targetWeight // Trigo es 100%
+  } else {
+    // Custom blend o blend de Supabase
+    let totalPoints = 0
+    Object.keys(customBlendRatios).forEach(fid => {
+      totalPoints += (customBlendRatios[fid] || 0)
+    })
 
-    setRecipes([newRecipe, ...recipes])
-    setNewRecipeTitle('')
-    setImportText('')
-    setShowRecipeForm(false)
-    alert('🍕 Receta guardada en tu recetario.')
+    flours.forEach(fl => {
+      const ratio = customBlendRatios[fl.id] || 0
+      if (ratio > 0) {
+        const pct = totalPoints > 0 ? (ratio / totalPoints) : 0
+        resolvedFloursGrams[fl.short_name] = Math.round(flourBaseWeight * pct)
+      }
+    })
+  }
+
+  const waterGrams = Math.round((targetWeight * customHydration) / 100)
+  const psylliumGrams = isGlutenFreeMode ? Math.round((targetWeight * customPsyllium) / 100) : 0
+  const yeastGrams = Math.round((targetWeight * (isGlutenFreeMode ? 2.5 : 1.5)) / 100)
+  const saltGrams = Math.round((targetWeight * (isGlutenFreeMode ? 2.0 : 2.5)) / 100)
+  const oilGrams = Math.round((targetWeight * (isGlutenFreeMode ? 3.5 : 2.0)) / 100)
+  const totalWeightGrams = targetWeight + waterGrams + psylliumGrams + yeastGrams + saltGrams + oilGrams
+
+  // Cambiar ratio del blend personalizado
+  const handleUpdateRatio = (flourId, val) => {
+    setCustomBlendRatios(prev => ({
+      ...prev,
+      [flourId]: parseInt(val) || 0
+    }))
   }
 
   return (
     <div className="flex flex-col h-full bg-[var(--bg-primary)] animate-float-in text-left">
-      {/* HEADER DE CABECERA */}
+      {/* HEADER */}
       <div className="p-4 border-b border-[var(--border-moss)] bg-[var(--bg-card)] flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div className="flex items-center gap-3">
           <button 
@@ -410,10 +491,19 @@ export default function PizzaLabScreen({ onClose }) {
             </h1>
           </div>
         </div>
-        <Badge color="mint">Modo Pro 🔬</Badge>
+        
+        {/* Indicador de Supabase */}
+        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase border ${
+          isSupabaseOnline 
+            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
+            : 'bg-amber-500/10 text-amber-500 border-amber-500/20 animate-pulse'
+        }`}>
+          {isSupabaseOnline ? <Wifi size={10} /> : <WifiOff size={10} />}
+          {isSupabaseOnline ? 'Supabase Nube' : 'Modo Local'}
+        </span>
       </div>
 
-      {/* SUBTABS DE NAVEGACIÓN */}
+      {/* SUBTABS */}
       <div className="flex bg-[var(--bg-card)] border-b border-[var(--border-moss)] overflow-x-auto px-2 py-1 gap-1 sticky top-[57px] z-20" style={{ scrollbarWidth: 'none' }}>
         {[
           { id: 'calculadora', icon: Calculator, label: 'Fórmulas' },
@@ -449,112 +539,274 @@ export default function PizzaLabScreen({ onClose }) {
         {/* SUBTAB 1: CALCULADORA DE MASAS */}
         {activeSubTab === 'calculadora' && (
           <div className="space-y-4 animate-float-in">
-            {/* Cabecera */}
-            <div>
-              <h2 className="text-sm font-black text-[var(--text-primary)] flex items-center gap-1.5">
-                <Scale size={16} className="text-[var(--accent-mint)]" />
-                Fórmulas y Porcentajes de Panadero
-              </h2>
-              <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
-                Calcula la hidratación exacta y las proporciones según el grano o harina que uses hoy.
-              </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-sm font-black text-[var(--text-primary)] flex items-center gap-1.5">
+                  <Scale size={16} className="text-[var(--accent-mint)]" />
+                  Fórmulas y Porcentajes de Panadero
+                </h2>
+                <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">
+                  Calcula la hidratación exacta y mezcla tus harinas favoritas en vivo.
+                </p>
+              </div>
+              
+              {/* Botón para abrir el panel de agregar harinas */}
+              <button
+                onClick={() => setShowAddFlourForm(!showAddFlourForm)}
+                className="bg-[var(--accent-mint)]/10 text-[var(--accent-mint)] hover:bg-[var(--accent-mint)]/20 px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-0.5 transition-all"
+              >
+                <Plus size={10} /> Harinas
+              </button>
             </div>
 
-            {/* Selector de Base */}
-            <div className="grid grid-cols-3 gap-1.5">
-              {Object.keys(DOUGH_PRESETS).map(key => {
-                const item = DOUGH_PRESETS[key]
-                const isSel = selectedBase === key
-                return (
+            {/* FORMULARIO AGREGAR NUEVA HARINA A SUPABASE */}
+            {showAddFlourForm && (
+              <form onSubmit={handleCreateFlour} className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl p-4 space-y-3 shadow-md animate-float-in">
+                <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5 border-b border-[var(--border-moss)] pb-2 mb-1">
+                  <Database size={13} className="text-[var(--accent-mint)]" /> Agregar Harina Personalizada al Catálogo
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[9px] font-bold text-[var(--text-secondary)] mb-1">Nombre Completo:</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={newFlour.name}
+                      onChange={(e) => setNewFlour(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Ej: Harina de Sarraceno"
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-[var(--text-secondary)] mb-1">Nombre Corto:</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={newFlour.short_name}
+                      onChange={(e) => setNewFlour(prev => ({ ...prev, short_name: e.target.value }))}
+                      placeholder="Ej: Sarraceno"
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2.5 py-1.5 text-xs text-[var(--text-primary)] outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-[9px] font-bold text-[var(--text-secondary)] mb-1">Emoji:</label>
+                    <input 
+                      type="text" 
+                      value={newFlour.emoji}
+                      onChange={(e) => setNewFlour(prev => ({ ...prev, emoji: e.target.value }))}
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2.5 py-1.5 text-xs text-center"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-[var(--text-secondary)] mb-1">Absorción (H2O %):</label>
+                    <input 
+                      type="number" 
+                      value={newFlour.absorption_rate}
+                      onChange={(e) => setNewFlour(prev => ({ ...prev, absorption_rate: parseInt(e.target.value) || 70 }))}
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2.5 py-1.5 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-[var(--text-secondary)] mb-1">Energía Pránica:</label>
+                    <select 
+                      value={newFlour.sattva_energy}
+                      onChange={(e) => setNewFlour(prev => ({ ...prev, sattva_energy: e.target.value }))}
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2 py-1.5 text-xs"
+                    >
+                      <option value="Sattva">🌿 Sattva</option>
+                      <option value="Rajas">🔥 Rajas</option>
+                      <option value="Tamas">🪨 Tamas</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-center">
+                  <label className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-primary)] cursor-pointer">
+                    <input 
+                      type="checkbox"
+                      checked={newFlour.is_gluten_free}
+                      onChange={(e) => setNewFlour(prev => ({ ...prev, is_gluten_free: e.target.checked }))}
+                      className="accent-[var(--accent-mint)]"
+                    />
+                    ¿Es Harina Sin Gluten (GF)?
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-[9px] font-bold text-[var(--text-secondary)] mb-1">Descripción:</label>
+                  <textarea 
+                    value={newFlour.description}
+                    onChange={(e) => setNewFlour(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Describe sus propiedades, textura o comportamiento..."
+                    rows="2"
+                    className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-3 py-2 text-xs text-[var(--text-primary)] outline-none resize-none font-sans"
+                  />
+                </div>
+
+                <div className="flex gap-2">
                   <button
-                    key={key}
-                    onClick={() => setSelectedBase(key)}
-                    className={`p-2.5 rounded-2xl border text-center transition-all tap-active flex flex-col items-center justify-center gap-1 min-h-[72px] ${
-                      isSel 
-                        ? 'border-[var(--accent-mint)] bg-[var(--accent-mint)]/10 text-[var(--text-primary)] font-black shadow-sm' 
+                    type="submit"
+                    className="flex-1 bg-[var(--accent-mint)] text-[var(--bg-primary)] text-xs py-2 rounded-xl font-bold hover:bg-[var(--accent-mint)]/90"
+                  >
+                    Consagrar Harina
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddFlourForm(false)}
+                    className="px-4 border border-[var(--border-moss)] text-gray-500 rounded-xl text-xs"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* SECTOR NAVEGACIÓN BASES / BLENDS */}
+            <div className="space-y-2">
+              <label className="block text-[10px] uppercase tracking-wider font-bold text-[var(--text-secondary)]">Selecciona el tipo de Masa o Blend:</label>
+              
+              <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                {/* Presets Básicos */}
+                {[
+                  { id: 'multigrano', emoji: '🌾🔴', name: 'Multigrano' },
+                  { id: 'custom', emoji: '🧪', name: 'Blend Custom' },
+                  { id: 'avena', emoji: '🌾', name: 'Avena' },
+                  { id: 'quinua', emoji: '✨', name: 'Quinua' },
+                  { id: 'canihua', emoji: '🔴', name: 'Cañihua' },
+                  { id: 'trigo', emoji: '🍕', name: 'Trigo' }
+                ].map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedBaseMode(item.id)}
+                    className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                      selectedBaseMode === item.id 
+                        ? 'border-[var(--accent-mint)] bg-[var(--accent-mint)]/15 text-[var(--text-primary)]' 
                         : 'border-[var(--border-moss)] bg-[var(--bg-card)] text-[var(--text-secondary)]'
                     }`}
                   >
-                    <span className="text-xl">{item.emoji}</span>
-                    <span className="text-[9px] font-bold leading-tight break-words text-center">
-                      {item.shortName}
-                    </span>
+                    {item.emoji} {item.name}
                   </button>
-                )
-              })}
-            </div>
+                ))}
 
-            {/* Info Preset */}
-            <div className="p-3 bg-[var(--bg-elevated)]/60 rounded-2xl border border-[var(--border-moss)] text-xs text-[var(--text-secondary)] leading-relaxed flex gap-2.5">
-              <Info size={16} className="text-[var(--accent-mint)] flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="font-bold text-[var(--text-primary)] mb-0.5 flex items-center gap-1.5">
-                  {preset.name} 
-                  <Badge color={preset.isGlutenFree ? 'mint' : 'purple'}>
-                    {preset.isGlutenFree ? 'Sin Gluten' : 'Con Gluten'}
-                  </Badge>
-                </div>
-                <p className="text-[10px] leading-relaxed">{preset.description}</p>
+                {/* Renders de Blends Cargados de Supabase */}
+                {savedBlends.map(blend => (
+                  <button
+                    key={blend.id}
+                    onClick={() => setSelectedBaseMode(blend.id)}
+                    className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1 ${
+                      selectedBaseMode === blend.id 
+                        ? 'border-[var(--accent-teal)] bg-[var(--accent-teal)]/15 text-[var(--text-primary)]' 
+                        : 'border-[var(--border-moss)] bg-[var(--bg-card)] text-[var(--text-secondary)]'
+                    }`}
+                  >
+                    💾 {blend.name}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* SI SELECCIONA BLEND PERSONALIZADO: MOSTRAR SLIDERS DE GRANOS */}
-            {selectedBase === 'custom' && (
-              <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl p-4 space-y-3.5 shadow-sm animate-float-in">
-                <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5 border-b border-[var(--border-moss)] pb-2 mb-1.5">
-                  🧪 Alquimia de Granos (Mezcla de Harinas Base)
-                </h3>
-                
-                {/* Avena */}
-                <div>
-                  <div className="flex justify-between text-[11px] mb-1.5">
-                    <span className="text-[var(--text-secondary)]">🌾 Harina de Avena:</span>
-                    <span className="font-bold text-[var(--text-primary)]">{pctAvena}%</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="100"
-                    value={blendAvena}
-                    onChange={(e) => setBlendAvena(parseInt(e.target.value))}
-                    className="w-full accent-amber-600 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
+            {/* MOSTRAR DESCRIPCIÓN DEL MODO SELECCIONADO */}
+            <div className="p-3 bg-[var(--bg-elevated)]/60 rounded-2xl border border-[var(--border-moss)] text-xs text-[var(--text-secondary)] leading-relaxed">
+              <span className="font-bold text-[var(--text-primary)] block mb-0.5">
+                {presetSelected.name || 'Blend de la Nube'} 
+                <Badge color={isGlutenFreeMode ? 'mint' : 'purple'}>
+                  {isGlutenFreeMode ? 'Sin Gluten' : 'Con Gluten'}
+                </Badge>
+              </span>
+              <p className="text-[10px] leading-relaxed">
+                {DOUGH_PRESETS[selectedBaseMode]?.description || 'Fórmula cargada desde el almacenamiento de tu Pizza Lab.'}
+              </p>
+            </div>
+
+            {/* SECCIÓN INTERACTIVA DE BLEND PERSONALIZADO */}
+            {(selectedBaseMode === 'custom' || savedBlends.some(b => b.id === selectedBaseMode)) && (
+              <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl p-4 space-y-4 shadow-sm animate-float-in">
+                <div className="flex justify-between items-center border-b border-[var(--border-moss)] pb-2 mb-1">
+                  <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                    🧪 Alquimia de Blend Dinámica ({flours.length} Harinas Disponibles)
+                  </h3>
+                  
+                  {/* Botón para guardar el blend actual en Supabase */}
+                  <button
+                    onClick={() => setShowSaveBlendModal(true)}
+                    className="bg-[var(--accent-teal)]/10 hover:bg-[var(--accent-teal)]/20 text-[var(--accent-teal)] border border-[var(--accent-teal)]/25 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5 transition-all"
+                  >
+                    <Save size={10} /> Guardar Blend
+                  </button>
                 </div>
 
-                {/* Quinua */}
-                <div>
-                  <div className="flex justify-between text-[11px] mb-1.5">
-                    <span className="text-[var(--text-secondary)]">✨ Harina de Quinua:</span>
-                    <span className="font-bold text-[var(--text-primary)]">{pctQuinua}%</span>
+                {/* MODAL / INPUT PARA GUARDAR BLEND */}
+                {showSaveBlendModal && (
+                  <div className="bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--accent-teal)]/30 space-y-2 animate-float-in">
+                    <label className="block text-[9px] font-bold text-[var(--text-primary)]">Nombre del Blend:</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        value={newBlendName}
+                        onChange={(e) => setNewBlendName(e.target.value)}
+                        placeholder="Ej: Blend Rústico Crujiente"
+                        className="flex-1 bg-white border border-[var(--border-moss)] rounded-lg px-2 py-1 text-xs outline-none"
+                      />
+                      <button
+                        onClick={handleSaveBlend}
+                        className="bg-[var(--accent-teal)] text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-[var(--accent-teal)]/90"
+                      >
+                        Guardar
+                      </button>
+                      <button
+                        onClick={() => setShowSaveBlendModal(false)}
+                        className="px-2 border border-gray-300 text-gray-500 rounded-lg text-xs"
+                      >
+                        X
+                      </button>
+                    </div>
                   </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="100"
-                    value={blendQuinua}
-                    onChange={(e) => setBlendQuinua(parseInt(e.target.value))}
-                    className="w-full accent-blue-500 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
+                )}
+
+                {/* RENDER DE SLIDERS DE HARINAS EN EL CATÁLOGO */}
+                <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                  {flours.map(fl => {
+                    const ratioValue = customBlendRatios[fl.id] || 0
+                    // Calcular el porcentaje normalizado instantáneo
+                    const ratioPct = totalBlendPoints > 0 ? Math.round((ratioValue / totalBlendPoints) * 100) : 0
+                    
+                    return (
+                      <div key={fl.id} className="flex flex-col gap-1 border-b border-[var(--border-moss)]/40 pb-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold text-[var(--text-primary)]">
+                            {fl.emoji} {fl.name} <span className="text-[9px] text-[var(--text-secondary)] font-normal">({fl.sattva_energy})</span>
+                          </span>
+                          <span className="text-xs font-black text-[var(--accent-mint)]">{ratioPct}%</span>
+                        </div>
+                        <div className="flex gap-3 items-center">
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="100"
+                            value={ratioValue}
+                            onChange={(e) => handleUpdateRatio(fl.id, e.target.value)}
+                            className="flex-1 accent-[var(--accent-mint)] h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          />
+                          <input 
+                            type="number" 
+                            min="0" 
+                            max="100"
+                            value={ratioValue}
+                            onChange={(e) => handleUpdateRatio(fl.id, e.target.value)}
+                            className="w-12 text-center text-xs bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-lg py-0.5"
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
 
-                {/* Cañihua */}
-                <div>
-                  <div className="flex justify-between text-[11px] mb-1.5">
-                    <span className="text-[var(--text-secondary)]">🔴 Harina de Cañihua:</span>
-                    <span className="font-bold text-[var(--text-primary)]">{pctCanihua}%</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="100"
-                    value={blendCanihua}
-                    onChange={(e) => setBlendCanihua(parseInt(e.target.value))}
-                    className="w-full accent-red-500 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                </div>
-
-                <div className="text-[9px] text-[var(--text-secondary)] italic pt-1 text-center">
-                  *Los porcentajes se normalizan automáticamente para sumar 100%.
+                <div className="text-[9px] text-[var(--text-secondary)] leading-relaxed italic text-center">
+                  *Ajusta los deslizadores de tus harinas. El sistema redistribuirá el peso en base al peso total de harina deseado.
                 </div>
               </div>
             )}
@@ -586,22 +838,22 @@ export default function PizzaLabScreen({ onClose }) {
                 </div>
                 <input 
                   type="range" 
-                  min={preset.isGlutenFree ? 70 : 50} 
-                  max={preset.isGlutenFree ? 110 : 80} 
+                  min={isGlutenFreeMode ? 70 : 50} 
+                  max={isGlutenFreeMode ? 110 : 80} 
                   step="2"
                   value={customHydration}
                   onChange={(e) => setCustomHydration(parseInt(e.target.value))}
                   className="w-full accent-[var(--accent-teal)]"
                 />
                 <span className="text-[9px] text-[var(--text-muted)] mt-1 block">
-                  {preset.isGlutenFree 
+                  {isGlutenFreeMode 
                     ? '⚠️ Las masas sin gluten necesitan mayor hidratación (80%+) porque carecen de red elástica natural.' 
                     : '💡 El trigo tradicional requiere menor hidratación (60% a 70%).'}
                 </span>
               </div>
 
               {/* Psyllium Husk */}
-              {preset.isGlutenFree ? (
+              {isGlutenFreeMode ? (
                 <div>
                   <div className="flex justify-between text-xs mb-1.5">
                     <span className="font-bold text-[var(--text-primary)]">Psyllium Husk (Aglutinante):</span>
@@ -614,7 +866,7 @@ export default function PizzaLabScreen({ onClose }) {
                     step="1"
                     value={customPsyllium}
                     onChange={(e) => setCustomPsyllium(parseInt(e.target.value))}
-                    className="w-full accent-[var(--accent-gold)]"
+                    className="w-full accent(--accent-gold)"
                   />
                   <span className="text-[9px] text-[var(--text-muted)] mt-1 block">
                     Aporta la elasticidad y retención de gas necesaria que no tiene la avena/quinua/cañihua.
@@ -627,54 +879,35 @@ export default function PizzaLabScreen({ onClose }) {
               )}
             </div>
 
-            {/* TABLA DE RESULTADO (DESGLOSE DE INGREDIENTES) */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl overflow-hidden shadow-sm animate-float-in">
+            {/* TABLA DE DESGLOSE DE HARINAS EN VIVO */}
+            <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl overflow-hidden shadow-sm">
               <div className="p-3 bg-[var(--bg-elevated)] border-b border-[var(--border-moss)] flex justify-between items-center">
-                <span className="text-xs font-bold text-[var(--text-primary)]">Fórmula de Pesado ({preset.shortName})</span>
+                <span className="text-xs font-bold text-[var(--text-primary)]">Fórmula de Pesado ({presetSelected.shortName})</span>
                 <span className="text-[10px] bg-[var(--accent-mint)]/10 text-[var(--accent-mint)] px-2 py-0.5 rounded-full font-black">
                   Masa total: {totalWeightGrams}g
                 </span>
               </div>
               <div className="divide-y divide-[var(--border-moss)] text-xs">
                 
-                {/* Desglose de granos si es blend (Multigrano o Custom) */}
-                {(selectedBase === 'multigrano' || selectedBase === 'custom') ? (
-                  <>
-                    <div className="p-3 bg-[var(--bg-primary)]/50">
-                      <span className="font-bold text-[var(--text-primary)] block mb-2">🌾 Desglose de Harinas Base ({preset.ratioFlours}%)</span>
-                      <div className="pl-3 space-y-2 text-[11px] text-[var(--text-secondary)] border-l-2 border-[var(--accent-mint)]">
-                        <div className="flex justify-between">
-                          <span>Harina de Avena ({selectedBase === 'multigrano' ? '50%' : `${pctAvena}%`}):</span>
-                          <span className="font-semibold text-[var(--text-primary)]">{avenaGrams} g</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Harina de Quinua ({selectedBase === 'multigrano' ? '30%' : `${pctQuinua}%`}):</span>
-                          <span className="font-semibold text-[var(--text-primary)]">{quinuaGrams} g</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Harina de Cañihua ({selectedBase === 'multigrano' ? '20%' : `${pctCanihua}%`}):</span>
-                          <span className="font-semibold text-[var(--text-primary)]">{canihuaGrams} g</span>
-                        </div>
+                {/* Desglose de Harinas Base */}
+                <div className="p-3 bg-[var(--bg-primary)]/50">
+                  <span className="font-bold text-[var(--text-primary)] block mb-2">🌾 Harinas Base Culinarias ({presetSelected.ratioFlours}%)</span>
+                  <div className="pl-3 space-y-2 text-[11px] text-[var(--text-secondary)] border-l-2 border-[var(--accent-mint)]">
+                    {Object.keys(resolvedFloursGrams).map(flourName => (
+                      <div key={flourName} className="flex justify-between">
+                        <span>Harina de {flourName}:</span>
+                        <span className="font-semibold text-[var(--text-primary)]">{resolvedFloursGrams[flourName]} g</span>
                       </div>
-                    </div>
-                  </>
-                ) : (
-                  /* Harina Base Única */
-                  <div className="p-3 flex justify-between">
-                    <div>
-                      <span className="font-bold text-[var(--text-primary)] block">🌾 Harina Única Base ({preset.ratioFlours}%)</span>
-                      <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.base}</span>
-                    </div>
-                    <span className="font-bold text-[var(--text-primary)] self-center">{flourBaseGrams} g</span>
+                    ))}
                   </div>
-                )}
+                </div>
                 
-                {/* Harina / Fécula Secundaria (Si la hay) */}
-                {preset.flours.starch && (
+                {/* Fécula/Almidón */}
+                {presetSelected.flours.starch && (
                   <div className="p-3 flex justify-between">
                     <div>
-                      <span className="font-bold text-[var(--text-primary)] block">🍠 Fécula / Almidón ({100 - preset.ratioFlours}%)</span>
-                      <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.starch} (aporta elasticidad y suavidad)</span>
+                      <span className="font-bold text-[var(--text-primary)] block">🍠 Fécula / Almidón ({100 - presetSelected.ratioFlours}%)</span>
+                      <span className="text-[9px] text-[var(--text-secondary)]">{presetSelected.flours.starch} (aporta flexibilidad)</span>
                     </div>
                     <span className="font-bold text-[var(--text-primary)] self-center">{flourStarchGrams} g</span>
                   </div>
@@ -690,7 +923,7 @@ export default function PizzaLabScreen({ onClose }) {
                 </div>
 
                 {/* Psyllium Husk (Solo sin gluten) */}
-                {preset.isGlutenFree && (
+                {isGlutenFreeMode && (
                   <div className="p-3 flex justify-between">
                     <div>
                       <span className="font-bold text-[var(--accent-gold)] block">🌀 Psyllium Husk ({customPsyllium}%)</span>
@@ -703,7 +936,7 @@ export default function PizzaLabScreen({ onClose }) {
                 {/* Levadura */}
                 <div className="p-3 flex justify-between">
                   <div>
-                    <span className="font-bold text-[var(--text-primary)] block">🍞 Levadura Seca ({preset.yeast}%)</span>
+                    <span className="font-bold text-[var(--text-primary)] block">🍞 Levadura Seca ({presetSelected.yeast || 2.5}%)</span>
                     <span className="text-[9px] text-[var(--text-secondary)]">Levadura instantánea de panadería</span>
                   </div>
                   <span className="font-bold text-[var(--text-primary)] self-center">{yeastGrams} g</span>
@@ -712,7 +945,7 @@ export default function PizzaLabScreen({ onClose }) {
                 {/* Sal */}
                 <div className="p-3 flex justify-between">
                   <div>
-                    <span className="font-bold text-[var(--text-primary)] block">🧂 Sal Marina ({preset.salt}%)</span>
+                    <span className="font-bold text-[var(--text-primary)] block">🧂 Sal Marina ({presetSelected.salt || 2}%)</span>
                     <span className="text-[9px] text-[var(--text-secondary)]">Realzador de sabor</span>
                   </div>
                   <span className="font-bold text-[var(--text-primary)] self-center">{saltGrams} g</span>
@@ -721,13 +954,28 @@ export default function PizzaLabScreen({ onClose }) {
                 {/* Aceite */}
                 <div className="p-3 flex justify-between">
                   <div>
-                    <span className="font-bold text-[var(--text-primary)] block">🫒 Aceite de Oliva ({preset.oil}%)</span>
+                    <span className="font-bold text-[var(--text-primary)] block">🫒 Aceite de Oliva ({presetSelected.oil || 3.5}%)</span>
                     <span className="text-[9px] text-[var(--text-secondary)]">Suavidad y textura rústica</span>
                   </div>
                   <span className="font-bold text-[var(--text-primary)] self-center">{oilGrams} g</span>
                 </div>
               </div>
             </div>
+
+            {/* Advertencia de RLS si está en Supabase Online */}
+            {isSupabaseOnline && (
+              <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl text-[10px] text-amber-700 leading-normal flex gap-2">
+                <AlertCircle size={14} className="flex-shrink-0 mt-0.5 text-amber-600" />
+                <div>
+                  <span className="font-bold block">⚠️ Alerta de Seguridad (Desarrollo):</span>
+                  Las tablas de Supabase tienen deshabilitado **RLS (Row Level Security)**. 
+                  Para producción, ejecuta:
+                  <code className="block bg-black/5 text-[9px] text-black font-mono p-1 rounded mt-1 overflow-x-auto">
+                    ALTER TABLE public.pizza_flours ENABLE ROW LEVEL SECURITY;
+                  </code>
+                </div>
+              </div>
+            )}
 
             <button
               onClick={() => setActiveSubTab('checklist')}
@@ -748,18 +996,18 @@ export default function PizzaLabScreen({ onClose }) {
                 Mise en Place & Pasos Clave
               </h2>
               <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
-                Las masas {preset.isGlutenFree ? 'sin gluten' : 'tradicionales'} tienen procesos diferentes. Sigue este orden de preparación.
+                Sigue el orden del proceso alquímico adaptado a tu masa.
               </p>
             </div>
 
             {/* Checklist interactivo adaptado */}
             <div className="space-y-2.5">
-              {(preset.isGlutenFree 
+              {(isGlutenFreeMode 
                 ? [
                     { id: 'm1', title: 'Pesar harinas y féculas por separado', details: 'Asegúrate de combinar los porcentajes exactos indicados en el desglose de harinas.' },
                     { id: 'm2', title: 'Gelificar el Psyllium Husk', details: 'Mezcla el psyllium husk con la mitad de agua tibia y reposa 10 min hasta crear un gel gomoso.' },
                     { id: 'm3', title: 'Activar la Levadura', details: 'Disuelve la levadura en 50ml de agua tibia con una pizca de endulzante por 5 min hasta espumar.' },
-                    { id: 'm4', title: 'Mezclar Secos', details: 'Unifica las harinas de granos (avena/quinua/cañihua), el almidón de yuca y la sal en un bowl grande.' },
+                    { id: 'm4', title: 'Mezclar Secos', details: 'Unifica las harinas de granos, el almidón de yuca y la sal en un bowl grande.' },
                     { id: 'm5', title: 'Amasar sin Gluten', details: 'Agrega el gel de psyllium, la levadura activa, el resto del agua y el aceite. Amasa. Será húmeda y densa.' },
                     { id: 'm6', title: 'Estirar sobre Papel Manteca', details: 'Añade aceite a tus manos y estira directamente sobre papel de horno. Evita que se desarme.' },
                     { id: 'm7', title: 'Pre-horneo obligatorio', details: 'Hornea la masa sola (sin salsa ni queso) a 240°C por 8 min para fijar estructura.' }
@@ -807,24 +1055,24 @@ export default function PizzaLabScreen({ onClose }) {
               <button
                 onClick={() => {
                   setTimerType('leudado')
-                  setTimerMax(preset.isGlutenFree ? 5400 : 7200)
-                  setTimeLeft(preset.isGlutenFree ? 5400 : 7200)
+                  setTimerMax(isGlutenFreeMode ? 5400 : 7200)
+                  setTimeLeft(isGlutenFreeMode ? 5400 : 7200)
                   setActiveSubTab('timer')
                 }}
                 className="flex-1 bg-[var(--accent-teal)] hover:bg-[var(--accent-teal)]/90 text-white font-bold text-xs py-3 rounded-xl tap-active transition-all flex items-center justify-center gap-1.5"
               >
-                <Hourglass size={14} /> Leudado ({preset.isGlutenFree ? '1.5h' : '2h'})
+                <Hourglass size={14} /> Leudado ({isGlutenFreeMode ? '1.5h' : '2h'})
               </button>
               <button
                 onClick={() => {
                   setTimerType('horneado')
-                  setTimerMax(preset.isGlutenFree ? 480 : 300)
-                  setTimeLeft(preset.isGlutenFree ? 480 : 300)
+                  setTimerMax(isGlutenFreeMode ? 480 : 300)
+                  setTimeLeft(isGlutenFreeMode ? 480 : 300)
                   setActiveSubTab('timer')
                 }}
                 className="flex-1 bg-[var(--accent-gold)] hover:bg-[var(--accent-gold)]/90 text-white font-bold text-xs py-3 rounded-xl tap-active transition-all flex items-center justify-center gap-1.5"
               >
-                <Flame size={14} /> Horneo ({preset.isGlutenFree ? '8m' : '5m'})
+                <Flame size={14} /> Horneo ({isGlutenFreeMode ? '8m' : '5m'})
               </button>
             </div>
           </div>
@@ -878,7 +1126,7 @@ export default function PizzaLabScreen({ onClose }) {
               </button>
             </div>
 
-            {/* Temporizador circular / display gigante */}
+            {/* Temporizador circular */}
             <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center space-y-4">
               <div className="relative w-44 h-44 flex items-center justify-center rounded-full bg-[var(--bg-primary)] border-4 border-[var(--border-moss)] shadow-inner">
                 <div className="text-3xl font-black text-[var(--text-primary)] font-['Space_Grotesk'] tracking-wider">
@@ -943,9 +1191,6 @@ export default function PizzaLabScreen({ onClose }) {
               <p className="text-[10px] text-[var(--text-secondary)]">
                 1. Asegúrate de que el horno esté encendido a su temperatura máxima por al menos 30 minutos antes.
               </p>
-              <p className="text-[10px] text-[var(--text-secondary)]">
-                2. Si usas masa de trigo tradicional, estira usando sémola para dar una base áspera y súper crocante.
-              </p>
             </div>
           </div>
         )}
@@ -986,24 +1231,22 @@ export default function PizzaLabScreen({ onClose }) {
                 <div>
                   <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1">Harina Base:</label>
                   <select 
-                    value={newExp.baseType}
-                    onChange={(e) => setNewExp(prev => ({ ...prev, baseType: e.target.value }))}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2.5 py-2 text-xs text-[var(--text-primary)] outline-none"
+                    value={selectedBaseMode}
+                    disabled
+                    className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-2.5 py-2 text-xs text-[var(--text-primary)] outline-none opacity-80"
                   >
-                    {Object.keys(DOUGH_PRESETS).map(key => (
-                      <option key={key} value={key}>
-                        {DOUGH_PRESETS[key].emoji} {DOUGH_PRESETS[key].shortName}
-                      </option>
-                    ))}
+                    <option value={selectedBaseMode}>
+                      {presetSelected.emoji || '💾'} {presetSelected.shortName}
+                    </option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-[var(--text-secondary)] mb-1">Hidratación (%):</label>
                   <input 
                     type="number" 
-                    value={newExp.hydration}
-                    onChange={(e) => setNewExp(prev => ({ ...prev, hydration: parseInt(e.target.value) || 80 }))}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-3 py-2 text-xs text-[var(--text-primary)] outline-none"
+                    value={customHydration}
+                    disabled
+                    className="w-full bg-[var(--bg-primary)] border border-[var(--border-moss)] rounded-xl px-3 py-2 text-xs text-[var(--text-primary)] outline-none opacity-80"
                   />
                 </div>
               </div>
@@ -1078,7 +1321,9 @@ export default function PizzaLabScreen({ onClose }) {
                 Bitácora de Ensayos ({experiments.length})
               </h3>
               
-              {experiments.length === 0 ? (
+              {loadingExperiments ? (
+                <div className="text-center py-4 text-xs text-[var(--text-secondary)]">Cargando bitácora de Supabase...</div>
+              ) : experiments.length === 0 ? (
                 <div className="bg-[var(--bg-card)] border border-dashed border-[var(--border-moss)] rounded-2xl p-6 text-center text-xs text-[var(--text-secondary)] shadow-sm">
                   <BookOpenCheck size={24} className="mx-auto mb-2 text-gray-400" />
                   Aún no has registrado ningún ensayo. ¡Inicia con tu primera masa de prueba!
@@ -1095,24 +1340,26 @@ export default function PizzaLabScreen({ onClose }) {
                     </button>
 
                     <div className="pr-6">
-                      <span className="text-[9px] text-[var(--text-muted)] font-medium block">{exp.date}</span>
+                      <span className="text-[9px] text-[var(--text-muted)] font-medium block">
+                        {exp.created_at ? new Date(exp.created_at).toLocaleDateString() : exp.date}
+                      </span>
                       <h4 className="text-xs font-black text-[var(--text-primary)]">{exp.title}</h4>
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 text-[9px] text-gray-700">
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
-                        {DOUGH_PRESETS[exp.baseType]?.emoji} Harina: {DOUGH_PRESETS[exp.baseType]?.shortName || exp.baseType}
+                        🍕 Harina: {exp.base_type || exp.baseType}
                       </span>
-                      {exp.blendPercentages && (
+                      {exp.blend_percentages && (
                         <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold text-indigo-600">
-                          🧪 Bl: {exp.blendPercentages.avena}%Av/{exp.blendPercentages.quinua}%Qn/{exp.blendPercentages.canihua}%Ca
+                          🧪 Ratios: {Object.keys(exp.blend_percentages).map(k => `${exp.blend_percentages[k]}%`).join('/')}
                         </span>
                       )}
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
                         💧 Hidr: {exp.hydration}%
                       </span>
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
-                        ⏳ Ferm: {exp.fermentationTime}h
+                        ⏳ Ferm: {exp.fermentation_time || exp.fermentationTime}h
                       </span>
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
                         🔥 Temp: {exp.temperature}°C
@@ -1120,8 +1367,8 @@ export default function PizzaLabScreen({ onClose }) {
                     </div>
 
                     <div className="flex gap-4 text-[9px] border-t border-[var(--border-moss)] pt-2 mt-1">
-                      <span className="flex items-center gap-0.5 font-bold">Textura: <span className="text-yellow-500">{'⭐'.repeat(exp.textureScore)}</span></span>
-                      <span className="flex items-center gap-0.5 font-bold">Sabor: <span className="text-yellow-500">{'⭐'.repeat(exp.flavorScore)}</span></span>
+                      <span className="flex items-center gap-0.5 font-bold">Textura: <span className="text-yellow-500">{'⭐'.repeat(exp.texture_score || exp.textureScore)}</span></span>
+                      <span className="flex items-center gap-0.5 font-bold">Sabor: <span className="text-yellow-500">{'⭐'.repeat(exp.flavor_score || exp.flavorScore)}</span></span>
                     </div>
 
                     {exp.notes && (
@@ -1136,10 +1383,9 @@ export default function PizzaLabScreen({ onClose }) {
           </div>
         )}
 
-        {/* SUBTAB 5: RECETARIO / IMPORTADOR DE RECETAS */}
+        {/* SUBTAB 5: RECETARIO */}
         {activeSubTab === 'recetas' && (
           <div className="space-y-4 animate-float-in">
-            {/* Cabecera */}
             <div>
               <h2 className="text-sm font-black text-[var(--text-primary)] flex items-center gap-1.5">
                 <Sparkles size={16} className="text-[var(--accent-mint)]" />
@@ -1150,7 +1396,6 @@ export default function PizzaLabScreen({ onClose }) {
               </p>
             </div>
 
-            {/* Selector de Recetas */}
             {!selectedRecipe ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -1163,7 +1408,6 @@ export default function PizzaLabScreen({ onClose }) {
                   </button>
                 </div>
 
-                {/* Formulario Importar */}
                 {showRecipeForm && (
                   <form onSubmit={handleImportRecipe} className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl p-4 space-y-3.5 shadow-sm">
                     <div>
@@ -1197,7 +1441,6 @@ export default function PizzaLabScreen({ onClose }) {
                   </form>
                 )}
 
-                {/* Lista de Recetas */}
                 <div className="grid grid-cols-1 gap-2.5">
                   {recipes.map(recipe => (
                     <button
@@ -1220,9 +1463,7 @@ export default function PizzaLabScreen({ onClose }) {
                 </div>
               </div>
             ) : (
-              /* MODO COCINERO: DETALLE DE RECETA */
               <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl p-4 shadow-sm space-y-4 animate-float-in">
-                {/* Header detalle */}
                 <div className="flex justify-between items-start border-b border-[var(--border-moss)] pb-3">
                   <div>
                     <button 
@@ -1236,7 +1477,6 @@ export default function PizzaLabScreen({ onClose }) {
                   </div>
                 </div>
 
-                {/* Ingredientes de la receta */}
                 <div className="space-y-1.5">
                   <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1">
                     <Scale size={12} className="text-[var(--accent-mint)]" /> Ingredientes Requeridos:
@@ -1248,7 +1488,6 @@ export default function PizzaLabScreen({ onClose }) {
                   </ul>
                 </div>
 
-                {/* Pasos en Modo Cocinero */}
                 <div className="space-y-3">
                   <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1 border-t border-[var(--border-moss)] pt-3">
                     <FileText size={12} className="text-[var(--accent-teal)]" /> Pasos de Preparación:
