@@ -42,7 +42,7 @@ const DOUGH_PRESETS = {
     emoji: '🔴',
     isGlutenFree: true,
     flours: { base: 'Harina de Cañihua', starch: 'Almidón de Yuca' },
-    ratioFlours: 60, // 60% Cañihua, 40% Yuca (la cañihua es más densa)
+    ratioFlours: 60, // 60% Cañihua, 40% Yuca
     hydration: 95,
     psyllium: 5,
     yeast: 2.5,
@@ -50,15 +50,43 @@ const DOUGH_PRESETS = {
     oil: 4,
     description: 'Masa rústica súper-nutritiva de color oscuro y sabor profundo. Alta presencia de antioxidantes. Excelente crocancia al pre-horneo.'
   },
+  multigrano: {
+    name: 'Blend Multigrano Culinario (Chef Recomendación)',
+    shortName: 'Multigrano',
+    emoji: '🌾🔴',
+    isGlutenFree: true,
+    flours: { base: 'Mezcla Multigrano', starch: 'Almidón de Yuca' },
+    ratioFlours: 70, // 70% granos, 30% yuca
+    hydration: 90,
+    psyllium: 4.5,
+    yeast: 2.5,
+    salt: 2,
+    oil: 3.5,
+    description: 'La Santísima Trinidad recomendada por el Chef: 50% Avena (cohesión y suavidad), 30% Quinua (estructura y proteína) y 20% Cañihua (sabor tostado, color y antioxidantes). El balance perfecto de sabor y estructura.'
+  },
+  custom: {
+    name: 'Blend Personalizado de Granos',
+    shortName: 'Blend Custom',
+    emoji: '🧪',
+    isGlutenFree: true,
+    flours: { base: 'Mezcla Personalizada', starch: 'Almidón de Yuca' },
+    ratioFlours: 70,
+    hydration: 90,
+    psyllium: 4.5,
+    yeast: 2.5,
+    salt: 2,
+    oil: 3.5,
+    description: 'Crea tu propia alquimia. Controla las proporciones exactas de Avena, Quinua y Cañihua en la mezcla base para tus experimentos.'
+  },
   trigo: {
     name: 'Masa de Trigo Tradicional',
     shortName: 'Trigo (Gluten)',
     emoji: '🍕',
     isGlutenFree: false,
     flours: { base: 'Harina de Trigo (Fuerza o 00)', starch: null },
-    ratioFlours: 100, // 100% Trigo
-    hydration: 65, // Hidratación tradicional para masas con gluten
-    psyllium: 0, // No necesita psyllium, tiene gluten natural
+    ratioFlours: 100,
+    hydration: 65,
+    psyllium: 0,
     yeast: 1.5,
     salt: 2.5,
     oil: 2,
@@ -68,6 +96,33 @@ const DOUGH_PRESETS = {
 
 // RECETAS PRE-CARGADAS DE LA IA / TRADICIONALES
 const INITIAL_RECIPES = [
+  {
+    id: 'multigrano-chef',
+    title: 'Pizza Multigrano con la Santísima Trinidad Culinaria',
+    source: 'Chef de Pizzas / Especialista',
+    description: 'Masa equilibrada combinando avena, quinua y cañihua con almidón de yuca para máxima elasticidad.',
+    ingredients: [
+      '150g Harina de Avena (cohesión)',
+      '90g Harina de Quinua (proteína y estructura)',
+      '60g Harina de Cañihua (sabor tostado y color)',
+      '120g Almidón de Yuca (tapioca para el efecto elástico)',
+      '360ml Agua tibia',
+      '18g Psyllium Husk (aglutinante)',
+      '10g Levadura seca',
+      '8g Sal fina',
+      '14ml Aceite de oliva'
+    ],
+    steps: [
+      'Gelificar: Mezclar el psyllium husk con 220ml del agua templada de la receta. Reposar 10 min hasta obtener una goma densa.',
+      'Mezclar Secos: En un bowl, tamizar y juntar la harina de avena, quinua, cañihua, almidón de yuca y sal.',
+      'Activar levadura: En 60ml de agua tibia con una pizca de endulzante, activar la levadura por 5 min.',
+      'Unificación: Agregar al bowl de secos el gel de psyllium, la levadura espumosa, el resto del agua y el aceite. Amasar hasta homogeneizar completamente.',
+      'Fermentación: Cubrir con paño húmedo y leudar por 90 min en ambiente cálido.',
+      'Estirado: Colocar la masa húmeda sobre papel vegetal aceitado. Estirar a mano hasta lograr 5-6mm de espesor.',
+      'Pre-horneo: Hornear la masa sola a 250°C por 7-8 minutos hasta que se fije la corteza.',
+      'Decoración y horneado final: Retirar, colocar salsa de tomate, toppings y hornear 6 minutos extra.'
+    ]
+  },
   {
     id: 'gf-napolitana',
     title: 'Pizza Faux-Napolitana de Avena y Yuca',
@@ -92,31 +147,6 @@ const INITIAL_RECIPES = [
       'Pre-horneo: Hornear la masa sola (sin ingredientes) durante 6-8 minutos para fijar la estructura sin gluten.',
       'Montaje: Retirar, colocar salsa de tomate artesanal, queso vegetal (de almendras o anacardos) y albahaca fresca.',
       'Horneado final: Hornear 5-7 minutos más hasta que los bordes estén dorados y crujientes.'
-    ]
-  },
-  {
-    id: 'canihua-florentina',
-    title: 'Pizza Silvestre de Cañihua con Hongos y Pesto',
-    source: 'Oráculo Culinario',
-    description: 'Masa densa, crujiente y cargada de prana mineral.',
-    ingredients: [
-      '250g Harina de Cañihua',
-      '170g Almidón de Yuca',
-      '400ml Agua tibia',
-      '20g Psyllium Husk',
-      '9g Levadura seca',
-      '8g Sal marina',
-      '15ml Aceite de oliva'
-    ],
-    steps: [
-      'Mezclar y activar el psyllium con la mitad del agua templada hasta crear el gel aglutinante.',
-      'Unificar los secos en un recipiente: harina de cañihua, almidón de yuca, levadura y sal.',
-      'Incorporar el gel de psyllium y el agua restante. Amasar hasta homogeneizar la mezcla.',
-      'Hacer un leudado en bloque de 90 minutos en un espacio oscuro y cálido.',
-      'Estirar la masa fina sobre papel manteca. Esta masa de cañihua es rústica, por lo que un espesor de 5mm es ideal.',
-      'Pre-hornear a 240°C por 8-10 minutos hasta que la superficie se sientas seca y firme.',
-      'Decorar con pesto de albahaca y espinacas, champiñones salteados y piñones activados.',
-      'Hornear por 6 minutos más hasta que la base esté completamente crujiente.'
     ]
   },
   {
@@ -148,10 +178,21 @@ export default function PizzaLabScreen({ onClose }) {
   const [activeSubTab, setActiveSubTab] = useState('calculadora')
   
   // Estados de los Submódulos
-  const [selectedBase, setSelectedBase] = useState('avena')
+  const [selectedBase, setSelectedBase] = useState('multigrano') // Multigrano por defecto ahora
   const [targetWeight, setTargetWeight] = useState(400) // gramos de harina total
-  const [customHydration, setCustomHydration] = useState(85)
-  const [customPsyllium, setCustomPsyllium] = useState(4)
+  const [customHydration, setCustomHydration] = useState(90)
+  const [customPsyllium, setCustomPsyllium] = useState(4.5)
+
+  // Sliders para la mezcla personalizada (Custom Blend)
+  const [blendAvena, setBlendAvena] = useState(50)
+  const [blendQuinua, setBlendQuinua] = useState(30)
+  const [blendCanihua, setBlendCanihua] = useState(20)
+
+  // Calcular porcentajes normalizados del blend
+  const totalBlendPoints = blendAvena + blendQuinua + blendCanihua
+  const pctAvena = totalBlendPoints > 0 ? Math.round((blendAvena / totalBlendPoints) * 100) : 0
+  const pctQuinua = totalBlendPoints > 0 ? Math.round((blendQuinua / totalBlendPoints) * 100) : 0
+  const pctCanihua = totalBlendPoints > 0 ? 100 - pctAvena - pctQuinua : 0
 
   // Checklist de Mise en Place
   const [checkedSteps, setCheckedSteps] = useState({})
@@ -159,8 +200,8 @@ export default function PizzaLabScreen({ onClose }) {
   // Temporizadores
   const [timerRunning, setTimerRunning] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0) // segundos
-  const [timerMax, setTimerMax] = useState(7200) // por defecto 2 horas
-  const [timerType, setTimerType] = useState('leudado') // 'leudado' o 'horneado'
+  const [timerMax, setTimerMax] = useState(5400) // por defecto 1.5 horas
+  const [timerType, setTimerType] = useState('leudado')
   const timerIntervalRef = useRef(null)
 
   // Bitácora de Experimentos
@@ -175,10 +216,10 @@ export default function PizzaLabScreen({ onClose }) {
   
   // Formulario de Experimento
   const [newExp, setNewExp] = useState({
-    baseType: 'avena',
-    hydration: 85,
-    fermentationTime: 2, // horas
-    temperature: 250, // °C
+    baseType: 'multigrano',
+    hydration: 90,
+    fermentationTime: 1.5,
+    temperature: 250,
     textureScore: 5,
     flavorScore: 5,
     notes: '',
@@ -249,6 +290,29 @@ export default function PizzaLabScreen({ onClose }) {
   const flourStarchGrams = preset.flours.starch 
     ? Math.round((targetWeight * (100 - preset.ratioFlours)) / 100)
     : 0
+  
+  // Calcular harinas rústicas distribuidas en caso de blends
+  let avenaGrams = 0
+  let quinuaGrams = 0
+  let canihuaGrams = 0
+
+  if (selectedBase === 'multigrano') {
+    // 50% Avena, 30% Quinua, 20% Cañihua
+    avenaGrams = Math.round((flourBaseGrams * 50) / 100)
+    quinuaGrams = Math.round((flourBaseGrams * 30) / 100)
+    canihuaGrams = Math.round((flourBaseGrams * 20) / 100)
+  } else if (selectedBase === 'custom') {
+    avenaGrams = Math.round((flourBaseGrams * pctAvena) / 100)
+    quinuaGrams = Math.round((flourBaseGrams * pctQuinua) / 100)
+    canihuaGrams = Math.round((flourBaseGrams * pctCanihua) / 100)
+  } else if (selectedBase === 'avena') {
+    avenaGrams = flourBaseGrams
+  } else if (selectedBase === 'quinua') {
+    quinuaGrams = flourBaseGrams
+  } else if (selectedBase === 'canihua') {
+    canihuaGrams = flourBaseGrams
+  }
+
   const waterGrams = Math.round((targetWeight * customHydration) / 100)
   const psylliumGrams = preset.isGlutenFree 
     ? Math.round((targetWeight * customPsyllium) / 100)
@@ -269,17 +333,22 @@ export default function PizzaLabScreen({ onClose }) {
   // Guardar Experimento
   const handleSaveExperiment = (e) => {
     e.preventDefault()
+    let descBlend = ''
+    if (newExp.baseType === 'custom') {
+      descBlend = ` (${pctAvena}% Av, ${pctQuinua}% Qn, ${pctCanihua}% Ca)`
+    }
     const experiment = {
       id: Date.now().toString(),
       date: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      title: newExp.title.trim() || `Ensayo #${experiments.length + 1} (${DOUGH_PRESETS[newExp.baseType].name})`,
-      ...newExp
+      title: newExp.title.trim() || `Ensayo #${experiments.length + 1} (${DOUGH_PRESETS[newExp.baseType].shortName}${descBlend})`,
+      ...newExp,
+      blendPercentages: newExp.baseType === 'custom' ? { avena: pctAvena, quinua: pctQuinua, canihua: pctCanihua } : null
     }
     setExperiments([experiment, ...experiments])
     setNewExp({
       baseType: selectedBase,
       hydration: customHydration,
-      fermentationTime: 2,
+      fermentationTime: 1.5,
       temperature: 250,
       textureScore: 5,
       flavorScore: 5,
@@ -345,7 +414,7 @@ export default function PizzaLabScreen({ onClose }) {
       </div>
 
       {/* SUBTABS DE NAVEGACIÓN */}
-      <div className="flex bg-[var(--bg-card)] border-b border-[var(--border-moss)] overflow-x-auto px-2 py-1 gap-1 sticky top-[57px] z-20">
+      <div className="flex bg-[var(--bg-card)] border-b border-[var(--border-moss)] overflow-x-auto px-2 py-1 gap-1 sticky top-[57px] z-20" style={{ scrollbarWidth: 'none' }}>
         {[
           { id: 'calculadora', icon: Calculator, label: 'Fórmulas' },
           { id: 'checklist', icon: ClipboardList, label: 'Mise en Place' },
@@ -387,12 +456,12 @@ export default function PizzaLabScreen({ onClose }) {
                 Fórmulas y Porcentajes de Panadero
               </h2>
               <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
-                Calcula la hidratación exacta y las proporciones necesarias según el grano o harina que uses hoy.
+                Calcula la hidratación exacta y las proporciones según el grano o harina que uses hoy.
               </p>
             </div>
 
             {/* Selector de Base */}
-            <div className="grid grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-3 gap-1.5">
               {Object.keys(DOUGH_PRESETS).map(key => {
                 const item = DOUGH_PRESETS[key]
                 const isSel = selectedBase === key
@@ -402,7 +471,7 @@ export default function PizzaLabScreen({ onClose }) {
                     onClick={() => setSelectedBase(key)}
                     className={`p-2.5 rounded-2xl border text-center transition-all tap-active flex flex-col items-center justify-center gap-1 min-h-[72px] ${
                       isSel 
-                        ? 'border-[var(--accent-mint)] bg-[var(--accent-mint)]/10 text-[var(--text-primary)] font-black' 
+                        ? 'border-[var(--accent-mint)] bg-[var(--accent-mint)]/10 text-[var(--text-primary)] font-black shadow-sm' 
                         : 'border-[var(--border-moss)] bg-[var(--bg-card)] text-[var(--text-secondary)]'
                     }`}
                   >
@@ -429,12 +498,73 @@ export default function PizzaLabScreen({ onClose }) {
               </div>
             </div>
 
-            {/* Controles numéricos */}
+            {/* SI SELECCIONA BLEND PERSONALIZADO: MOSTRAR SLIDERS DE GRANOS */}
+            {selectedBase === 'custom' && (
+              <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl p-4 space-y-3.5 shadow-sm animate-float-in">
+                <h3 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5 border-b border-[var(--border-moss)] pb-2 mb-1.5">
+                  🧪 Alquimia de Granos (Mezcla de Harinas Base)
+                </h3>
+                
+                {/* Avena */}
+                <div>
+                  <div className="flex justify-between text-[11px] mb-1.5">
+                    <span className="text-[var(--text-secondary)]">🌾 Harina de Avena:</span>
+                    <span className="font-bold text-[var(--text-primary)]">{pctAvena}%</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="100"
+                    value={blendAvena}
+                    onChange={(e) => setBlendAvena(parseInt(e.target.value))}
+                    className="w-full accent-amber-600 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                {/* Quinua */}
+                <div>
+                  <div className="flex justify-between text-[11px] mb-1.5">
+                    <span className="text-[var(--text-secondary)]">✨ Harina de Quinua:</span>
+                    <span className="font-bold text-[var(--text-primary)]">{pctQuinua}%</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="100"
+                    value={blendQuinua}
+                    onChange={(e) => setBlendQuinua(parseInt(e.target.value))}
+                    className="w-full accent-blue-500 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                {/* Cañihua */}
+                <div>
+                  <div className="flex justify-between text-[11px] mb-1.5">
+                    <span className="text-[var(--text-secondary)]">🔴 Harina de Cañihua:</span>
+                    <span className="font-bold text-[var(--text-primary)]">{pctCanihua}%</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="100"
+                    value={blendCanihua}
+                    onChange={(e) => setBlendCanihua(parseInt(e.target.value))}
+                    className="w-full accent-red-500 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+
+                <div className="text-[9px] text-[var(--text-secondary)] italic pt-1 text-center">
+                  *Los porcentajes se normalizan automáticamente para sumar 100%.
+                </div>
+              </div>
+            )}
+
+            {/* Controles numéricos generales de la masa */}
             <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl p-4 space-y-3.5 shadow-sm">
               {/* Peso Harina */}
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="font-bold text-[var(--text-primary)]">Harina Deseada (Secos totales):</span>
+                  <span className="font-bold text-[var(--text-primary)]">Peso de Secos Totales (Harina):</span>
                   <span className="font-black text-[var(--accent-mint)]">{targetWeight} g</span>
                 </div>
                 <input 
@@ -465,12 +595,12 @@ export default function PizzaLabScreen({ onClose }) {
                 />
                 <span className="text-[9px] text-[var(--text-muted)] mt-1 block">
                   {preset.isGlutenFree 
-                    ? '⚠️ Las masas sin gluten necesitan mayor hidratación (80%+) porque carecen de red de gluten.' 
+                    ? '⚠️ Las masas sin gluten necesitan mayor hidratación (80%+) porque carecen de red elástica natural.' 
                     : '💡 El trigo tradicional requiere menor hidratación (60% a 70%).'}
                 </span>
               </div>
 
-              {/* Psyllium Husk (Oculto o bloqueado si tiene gluten) */}
+              {/* Psyllium Husk */}
               {preset.isGlutenFree ? (
                 <div>
                   <div className="flex justify-between text-xs mb-1.5">
@@ -487,7 +617,7 @@ export default function PizzaLabScreen({ onClose }) {
                     className="w-full accent-[var(--accent-gold)]"
                   />
                   <span className="text-[9px] text-[var(--text-muted)] mt-1 block">
-                    Aporta la elasticidad y retención de gas necesaria que no tiene la avena/quinua.
+                    Aporta la elasticidad y retención de gas necesaria que no tiene la avena/quinua/cañihua.
                   </span>
                 </div>
               ) : (
@@ -497,30 +627,54 @@ export default function PizzaLabScreen({ onClose }) {
               )}
             </div>
 
-            {/* TABLA DE RESULTADO */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl overflow-hidden shadow-sm">
+            {/* TABLA DE RESULTADO (DESGLOSE DE INGREDIENTES) */}
+            <div className="bg-[var(--bg-card)] border border-[var(--border-moss)] rounded-2xl overflow-hidden shadow-sm animate-float-in">
               <div className="p-3 bg-[var(--bg-elevated)] border-b border-[var(--border-moss)] flex justify-between items-center">
-                <span className="text-xs font-bold text-[var(--text-primary)]">Mise en Place (Secos totales: {targetWeight}g)</span>
+                <span className="text-xs font-bold text-[var(--text-primary)]">Fórmula de Pesado ({preset.shortName})</span>
                 <span className="text-[10px] bg-[var(--accent-mint)]/10 text-[var(--accent-mint)] px-2 py-0.5 rounded-full font-black">
                   Masa total: {totalWeightGrams}g
                 </span>
               </div>
               <div className="divide-y divide-[var(--border-moss)] text-xs">
-                {/* Harina Base */}
-                <div className="p-3 flex justify-between">
-                  <div>
-                    <span className="font-bold text-[var(--text-primary)] block">🌾 Harina Base ({preset.ratioFlours}%)</span>
-                    <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.base}</span>
+                
+                {/* Desglose de granos si es blend (Multigrano o Custom) */}
+                {(selectedBase === 'multigrano' || selectedBase === 'custom') ? (
+                  <>
+                    <div className="p-3 bg-[var(--bg-primary)]/50">
+                      <span className="font-bold text-[var(--text-primary)] block mb-2">🌾 Desglose de Harinas Base ({preset.ratioFlours}%)</span>
+                      <div className="pl-3 space-y-2 text-[11px] text-[var(--text-secondary)] border-l-2 border-[var(--accent-mint)]">
+                        <div className="flex justify-between">
+                          <span>Harina de Avena ({selectedBase === 'multigrano' ? '50%' : `${pctAvena}%`}):</span>
+                          <span className="font-semibold text-[var(--text-primary)]">{avenaGrams} g</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Harina de Quinua ({selectedBase === 'multigrano' ? '30%' : `${pctQuinua}%`}):</span>
+                          <span className="font-semibold text-[var(--text-primary)]">{quinuaGrams} g</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Harina de Cañihua ({selectedBase === 'multigrano' ? '20%' : `${pctCanihua}%`}):</span>
+                          <span className="font-semibold text-[var(--text-primary)]">{canihuaGrams} g</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  /* Harina Base Única */
+                  <div className="p-3 flex justify-between">
+                    <div>
+                      <span className="font-bold text-[var(--text-primary)] block">🌾 Harina Única Base ({preset.ratioFlours}%)</span>
+                      <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.base}</span>
+                    </div>
+                    <span className="font-bold text-[var(--text-primary)] self-center">{flourBaseGrams} g</span>
                   </div>
-                  <span className="font-bold text-[var(--text-primary)] self-center">{flourBaseGrams} g</span>
-                </div>
+                )}
                 
                 {/* Harina / Fécula Secundaria (Si la hay) */}
                 {preset.flours.starch && (
                   <div className="p-3 flex justify-between">
                     <div>
                       <span className="font-bold text-[var(--text-primary)] block">🍠 Fécula / Almidón ({100 - preset.ratioFlours}%)</span>
-                      <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.starch} (aporta suavidad)</span>
+                      <span className="text-[9px] text-[var(--text-secondary)]">{preset.flours.starch} (aporta elasticidad y suavidad)</span>
                     </div>
                     <span className="font-bold text-[var(--text-primary)] self-center">{flourStarchGrams} g</span>
                   </div>
@@ -530,7 +684,7 @@ export default function PizzaLabScreen({ onClose }) {
                 <div className="p-3 flex justify-between">
                   <div>
                     <span className="font-bold text-[var(--accent-teal)] block">💧 Agua Tibia ({customHydration}%)</span>
-                    <span className="text-[9px] text-[var(--text-secondary)]">Para hidratar y activar la levadura</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Para hidratar e integrar la mezcla</span>
                   </div>
                   <span className="font-bold text-[var(--accent-teal)] self-center">{waterGrams} ml / g</span>
                 </div>
@@ -540,7 +694,7 @@ export default function PizzaLabScreen({ onClose }) {
                   <div className="p-3 flex justify-between">
                     <div>
                       <span className="font-bold text-[var(--accent-gold)] block">🌀 Psyllium Husk ({customPsyllium}%)</span>
-                      <span className="text-[9px] text-[var(--text-secondary)]">Aglutinante estructural y elasticidad</span>
+                      <span className="text-[9px] text-[var(--text-secondary)]">Estructura gomosa y elasticidad</span>
                     </div>
                     <span className="font-bold text-[var(--accent-gold)] self-center">{psylliumGrams} g</span>
                   </div>
@@ -550,7 +704,7 @@ export default function PizzaLabScreen({ onClose }) {
                 <div className="p-3 flex justify-between">
                   <div>
                     <span className="font-bold text-[var(--text-primary)] block">🍞 Levadura Seca ({preset.yeast}%)</span>
-                    <span className="text-[9px] text-[var(--text-secondary)]">Levadura de panadería instantánea</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Levadura instantánea de panadería</span>
                   </div>
                   <span className="font-bold text-[var(--text-primary)] self-center">{yeastGrams} g</span>
                 </div>
@@ -559,7 +713,7 @@ export default function PizzaLabScreen({ onClose }) {
                 <div className="p-3 flex justify-between">
                   <div>
                     <span className="font-bold text-[var(--text-primary)] block">🧂 Sal Marina ({preset.salt}%)</span>
-                    <span className="text-[9px] text-[var(--text-secondary)]">Aporte de sabor e inhibidor de levadura</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Realzador de sabor</span>
                   </div>
                   <span className="font-bold text-[var(--text-primary)] self-center">{saltGrams} g</span>
                 </div>
@@ -568,7 +722,7 @@ export default function PizzaLabScreen({ onClose }) {
                 <div className="p-3 flex justify-between">
                   <div>
                     <span className="font-bold text-[var(--text-primary)] block">🫒 Aceite de Oliva ({preset.oil}%)</span>
-                    <span className="text-[9px] text-[var(--text-secondary)]">Otorga extensibilidad y sabor rústico</span>
+                    <span className="text-[9px] text-[var(--text-secondary)]">Suavidad y textura rústica</span>
                   </div>
                   <span className="font-bold text-[var(--text-primary)] self-center">{oilGrams} g</span>
                 </div>
@@ -602,10 +756,10 @@ export default function PizzaLabScreen({ onClose }) {
             <div className="space-y-2.5">
               {(preset.isGlutenFree 
                 ? [
-                    { id: 'm1', title: 'Pesar harinas y féculas por separado', details: 'Combina avena/quinua/cañihua con el almidón de yuca.' },
+                    { id: 'm1', title: 'Pesar harinas y féculas por separado', details: 'Asegúrate de combinar los porcentajes exactos indicados en el desglose de harinas.' },
                     { id: 'm2', title: 'Gelificar el Psyllium Husk', details: 'Mezcla el psyllium husk con la mitad de agua tibia y reposa 10 min hasta crear un gel gomoso.' },
                     { id: 'm3', title: 'Activar la Levadura', details: 'Disuelve la levadura en 50ml de agua tibia con una pizca de endulzante por 5 min hasta espumar.' },
-                    { id: 'm4', title: 'Mezclar Secos', details: 'Unifica las harinas y la sal en un bowl grande.' },
+                    { id: 'm4', title: 'Mezclar Secos', details: 'Unifica las harinas de granos (avena/quinua/cañihua), el almidón de yuca y la sal en un bowl grande.' },
                     { id: 'm5', title: 'Amasar sin Gluten', details: 'Agrega el gel de psyllium, la levadura activa, el resto del agua y el aceite. Amasa. Será húmeda y densa.' },
                     { id: 'm6', title: 'Estirar sobre Papel Manteca', details: 'Añade aceite a tus manos y estira directamente sobre papel de horno. Evita que se desarme.' },
                     { id: 'm7', title: 'Pre-horneo obligatorio', details: 'Hornea la masa sola (sin salsa ni queso) a 240°C por 8 min para fijar estructura.' }
@@ -653,7 +807,7 @@ export default function PizzaLabScreen({ onClose }) {
               <button
                 onClick={() => {
                   setTimerType('leudado')
-                  setTimerMax(preset.isGlutenFree ? 5400 : 7200) // 1.5h vs 2h
+                  setTimerMax(preset.isGlutenFree ? 5400 : 7200)
                   setTimeLeft(preset.isGlutenFree ? 5400 : 7200)
                   setActiveSubTab('timer')
                 }}
@@ -664,7 +818,7 @@ export default function PizzaLabScreen({ onClose }) {
               <button
                 onClick={() => {
                   setTimerType('horneado')
-                  setTimerMax(preset.isGlutenFree ? 480 : 300) // 8m vs 5m
+                  setTimerMax(preset.isGlutenFree ? 480 : 300)
                   setTimeLeft(preset.isGlutenFree ? 480 : 300)
                   setActiveSubTab('timer')
                 }}
@@ -949,6 +1103,11 @@ export default function PizzaLabScreen({ onClose }) {
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
                         {DOUGH_PRESETS[exp.baseType]?.emoji} Harina: {DOUGH_PRESETS[exp.baseType]?.shortName || exp.baseType}
                       </span>
+                      {exp.blendPercentages && (
+                        <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold text-indigo-600">
+                          🧪 Bl: {exp.blendPercentages.avena}%Av/{exp.blendPercentages.quinua}%Qn/{exp.blendPercentages.canihua}%Ca
+                        </span>
+                      )}
                       <span className="bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full font-bold">
                         💧 Hidr: {exp.hydration}%
                       </span>
